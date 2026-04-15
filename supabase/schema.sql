@@ -195,67 +195,136 @@ INSERT INTO destinations (slug, name, country, lat, lng, best_months, wildlife_t
 ('tsavo', 'Tsavo East', 'Kenya', -2.9833, 38.5000,
  ARRAY['June','July','August','September','October'],
  ARRAY['Elephant','Lion','Leopard','Hippo','Crocodile'],
- 'Africa''s largest national park. Home to the famous red elephants and the legendary man-eating lions of Tsavo.');
-
+ 'Africa''s largest national park. Home to the famous red elephants and the legendary man-eating lions of Tsavo.'),
+('lake-nakuru', 'Lake Nakuru', 'Kenya', -0.3031, 36.0800,
+ ARRAY['June','July','August','September','October'],
+ ARRAY['Rhino','Flamingo','Buffalo','Leopard'],
+ 'Famous for its rhino sanctuary and vast flocks of flamingo on the lake shores.'),
+('hells-gate', 'Hell''s Gate', 'Kenya', -0.8967, 36.3167,
+ ARRAY['January','February','June','July','August','September'],
+ ARRAY['Cycling','Gorge','Geothermal','Wildlife'],
+ 'One of Kenya''s only parks where you can cycle and walk freely among wildlife through dramatic volcanic gorges.'),
+('lake-naivasha', 'Lake Naivasha', 'Kenya', -0.7667, 36.3500,
+ ARRAY['January','February','June','July','August','September'],
+ ARRAY['Hippo','Giraffe','Birdlife','Boat Safari'],
+ 'A scenic freshwater lake in the Rift Valley. Boat trips, Crescent Island walks, and the dramatic Hell''s Gate gorge next door.'),
+('taita-hills', 'Taita Hills & Salt Lick', 'Kenya', -3.4167, 38.3500,
+ ARRAY['June','July','August','September','October'],
+ ARRAY['Elephant','Buffalo','Zebra','Leopard','Waterbuck'],
+ 'A 113 sq km conservancy bordering Tsavo West. Home to the iconic Salt Lick Lodge, elevated on stilts above the wildlife corridors.'),
+('laikipia', 'Laikipia & Ol Pejeta', 'Kenya', 0.0000, 36.9000,
+ ARRAY['January','February','July','August','September','October'],
+ ARRAY['Big Five','Black Rhino','Wild Dog','Cheetah'],
+ 'Kenya''s largest private conservation area. Ol Pejeta hosts the last northern white rhinos and one of the highest predator densities in East Africa.'),
+('mombasa-coast', 'Mombasa & Diani Coast', 'Kenya', -4.0435, 39.6682,
+ ARRAY['January','February','March','June','July','August','September','October'],
+ ARRAY['Beach','Snorkelling','Diving','Swahili Culture','Marine Life'],
+ 'Kenya''s 536km Indian Ocean coastline. Diani Beach is the jewel — powder-white sand, warm water, and world-class dive sites on the coral reef.'),
+('mount-kenya', 'Mount Kenya', 'Kenya', -0.1522, 37.3084,
+ ARRAY['January','February','August','September'],
+ ARRAY['Trekking','Elephant','Buffalo','Leopard','Bongo'],
+ 'Africa''s second highest mountain and a UNESCO World Heritage Site. Sacred to the Kikuyu people, rich in high-altitude wildlife and scenery.'),
+('aberdare', 'Aberdare National Park', 'Kenya', -0.4000, 36.7000,
+ ARRAY['June','July','August','September'],
+ ARRAY['Black Rhino','Elephant','Lion','Leopard','Bongo','Waterfalls'],
 -- Tours (referencing tier and destination slugs via subqueries)
 INSERT INTO tours (slug, title, tier_id, destination_id, base_price, days_duration, max_group_size, short_desc, highlights, includes, scarcity_text, is_featured) VALUES
 (
-  'mara-private-immersion',
-  'Mara Private Reserve Immersion',
+  'mara-luxury-ashnil',
+  '4-Day Maasai Mara Luxury Safari',
   (SELECT id FROM tiers WHERE slug = 'sovereign'),
   (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  9800, 7, 2,
-  'Seven days in an exclusive conservancy with a private naturalist, balloon safari, and the Great Migration as your backdrop.',
-  ARRAY['Private balloon safari at dawn','Dedicated naturalist & vehicle','Migration river crossing front-row','Maasai community bead ceremony','Night safari & Milky Way sleeping','Cheetah research participation'],
-  ARRAY['All park & conservancy fees','All meals & premium drinks','Private vehicle & guide','Balloon safari','Bush flights'],
-  'Only 1 private villa left — September',
+  2744, 4, 6,
+  'Stay at the prestigious Ashnil Mara Lodge. Daily game drives, Big Five sightings, sundowners on the open plains.',
+  ARRAY['Ashnil Mara Lodge — full board','Daily private game drives','Big Five sightings','Sundowners on the open plains','Nairobi airport transfers'],
+  ARRAY['Accommodation at Ashnil Mara Lodge','All meals','Private game drive vehicle','Park fees','Airport transfers'],
+  'Limited dates — July & August',
   true
 ),
 (
-  'classic-mara-migration',
-  'Classic Mara Migration Circuit',
-  (SELECT id FROM tiers WHERE slug = 'horizon'),
-  (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  2400, 6, 6,
-  'Six days chasing the Great Migration through the Mara''s finest game corridors. Near-guaranteed Big Five sightings.',
-  ARRAY['Great Migration river crossing','Hippo pool sundowners','Guided bush walk with Maasai tracker','Big Five game drives','Mara gorge & fig forest exploration'],
-  ARRAY['All park fees','All meals','Semi-private 4x4 (max 6 guests)','Expert guide'],
-  '2 jeeps available — October',
-  true
-),
-(
-  'amboseli-kilimanjaro-panorama',
-  'Amboseli & Kilimanjaro Panorama',
+  'family-circuit-sopa',
+  '7-Day Private Family Safari at Sopa Lodges',
   (SELECT id FROM tiers WHERE slug = 'horizon'),
   (SELECT id FROM destinations WHERE slug = 'amboseli'),
-  1950, 5, 8,
-  'Five days with Africa''s greatest elephant herds beneath Kilimanjaro''s eternal snow cap.',
-  ARRAY['Big-tusked elephant encounters','Observation Hill panoramic views','Enkongo Narok swamp at dawn','Maasai village experience','Kilimanjaro sunrise photography'],
-  ARRAY['All park fees','All meals','4x4 game drive vehicle','Expert naturalist guide'],
-  'Filling fast — August',
+  2672, 7, 8,
+  'Kenya''s ultimate family circuit through Amboseli, Tsavo and the Maasai Mara, staying at the family-friendly Sopa Lodges.',
+  ARRAY['3 iconic parks in one journey','Sopa Lodges throughout — family friendly','Elephants beneath Kilimanjaro at Amboseli','Red elephants of Tsavo East','Big Five at the Maasai Mara'],
+  ARRAY['Accommodation at Sopa Lodges','All meals','Private 4x4 vehicle','All park fees','Airport transfers'],
+  '3 vehicles available — August',
+  true
+),
+(
+  'mara-nakuru-hells-gate',
+  '5-Day Mara, Nakuru & Hell''s Gate Safari',
+  (SELECT id FROM tiers WHERE slug = 'horizon'),
+  (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
+  1568, 5, 8,
+  'Rhinos at Nakuru, cycling through volcanic gorges at Hell''s Gate, then the Big Five at the Mara.',
+  ARRAY['Rhino tracking at Lake Nakuru','Cycling inside Hell''s Gate Gorge','Big Five game drives at the Mara','Scenic Rift Valley route','Fully private vehicle throughout'],
+  ARRAY['All accommodation','All meals','Private vehicle','Park & conservancy fees','Airport transfers'],
+  'Popular — book 3 weeks ahead',
+  true
+),
+(
+  'rift-valley-naivasha',
+  '5-Day Through the Rift Valley',
+  (SELECT id FROM tiers WHERE slug = 'horizon'),
+  (SELECT id FROM destinations WHERE slug = 'lake-naivasha'),
+  1420, 5, 8,
+  'Lake Nakuru''s flamingos and rhinos, Lake Naivasha''s hippos by boat, and cycling the volcanic gorges of Hell''s Gate.',
+  ARRAY['Lake Nakuru rhino & flamingo','Boat safari on Lake Naivasha','Cycling inside Hell''s Gate Gorge','Lake Elmentaita Serena Camp','Rift Valley escarpment viewpoints'],
+  ARRAY['All accommodation','All meals','Private 4x4','Park fees','Airport transfers'],
+  'Weekly departures available',
   false
 ),
 (
-  'serengeti-group-adventure',
-  'Serengeti Group Adventure',
-  (SELECT id FROM tiers WHERE slug = 'tribe'),
-  (SELECT id FROM destinations WHERE slug = 'serengeti'),
-  1100, 8, 12,
-  'Eight days across the Serengeti and Ngorongoro with a legendary crew. The ultimate social safari.',
-  ARRAY['Central Serengeti big cat country','Moru Kopjes & ancient rock art','Grumeti River hippos & crocodiles','Ngorongoro Crater descent','Group bush braai evenings'],
-  ARRAY['All park & crater fees','All meals at camp','Shared 4x4 (max 7 per vehicle)','Driver-guide'],
-  '4 spots remaining — November',
+  'kenya-classic-circuit',
+  '7-Day Kenya Classic Safari',
+  (SELECT id FROM tiers WHERE slug = 'horizon'),
+  (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
+  2190, 7, 8,
+  'The definitive Kenya circuit — Amboseli, Tsavo, and the Maasai Mara in one seamless week-long journey.',
+  ARRAY['Big Five across three iconic parks','Elephants beneath Kilimanjaro','Tsavo''s red dust elephant herds','Maasai Mara game drives','Expert driver-guide throughout'],
+  ARRAY['All accommodation','All meals','Private 4x4','All park fees','Airport transfers'],
+  'Popular — book 2 weeks ahead',
   true
 ),
 (
-  'samburu-collectors-safari',
-  'Samburu Collector''s Safari',
+  'mombasa-beach-safari',
+  '8-Day Kenya Odyssey to Mombasa',
+  (SELECT id FROM tiers WHERE slug = 'horizon'),
+  (SELECT id FROM destinations WHERE slug = 'mombasa-coast'),
+  2480, 8, 8,
+  'Safari through Kenya''s finest parks ending at the Indian Ocean — wildlife by day, sundowners on Diani Beach by night.',
+  ARRAY['Maasai Mara Big Five safari','Amboseli beneath Kilimanjaro','Tsavo red elephant herds','Diani Beach finale','Snorkelling on coral reef'],
+  ARRAY['All accommodation','All meals','Private 4x4','Park fees','Beach resort transfer'],
+  '2 departures per week',
+  true
+),
+(
+  'taita-salt-lick',
+  '5-Day Kilimanjaro to Mombasa via Taita Hills',
+  (SELECT id FROM tiers WHERE slug = 'horizon'),
+  (SELECT id FROM destinations WHERE slug = 'taita-hills'),
+  1680, 5, 8,
+  'Kilimanjaro views at Amboseli, the iconic Salt Lick Lodge on stilts in Taita Hills, then Mombasa''s warm Indian Ocean coast.',
+  ARRAY['Amboseli elephants & Kilimanjaro backdrop','Night game viewing at Salt Lick Lodge','Taita Hills wildlife corridor','Tsavo East en route','Mombasa coast arrival'],
+  ARRAY['All accommodation','All meals','Private 4x4','Park & conservancy fees','Transfers'],
+  'Weekly departures',
+  false
+),
+(
+  'ol-pejeta-laikipia',
+  '4-Day Laikipia & Ol Pejeta Conservancy',
   (SELECT id FROM tiers WHERE slug = 'sovereign'),
-  (SELECT id FROM destinations WHERE slug = 'samburu'),
-  8500, 5, 4,
-  'The Samburu Special Five, camel-back safaris, and nocturnal drives from a private hilltop villa above the Ewaso River.',
-  ARRAY['Samburu Special Five tracking','Private infinity-pool villa','Camel trekking with Samburu warriors','Full night game drives','Riverine walking safari'],
-  ARRAY['Private charter flight','All park fees','All meals & drinks','Private vehicle & guide','Night drive permit'],
+  (SELECT id FROM destinations WHERE slug = 'laikipia'),
+  3200, 4, 4,
+  'Africa''s most biodiverse conservancy — the last northern white rhinos, wild dog packs, and all of the Big Five in one private landscape.',
+  ARRAY['Last northern white rhinos on earth','African wild dog tracking','Night game drives permitted','Ol Pejeta''s Big Five','Chimpanzee sanctuary visit'],
+  ARRAY['All accommodation','All meals & drinks','Private conservancy vehicle','Conservation fees','Nairobi transfers'],
+  'Limited availability — book early',
+  false
+);
   '1 suite remaining — September',
   false
 ),
@@ -272,57 +341,8 @@ INSERT INTO tours (slug, title, tier_id, destination_id, base_price, days_durati
   false
 );
 
--- Itinerary Days for Mara Private Immersion
-INSERT INTO itinerary_days (tour_id, day_number, title, description, accommodation, destination_id, meals_included, activities) VALUES
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 1,
-  'Arrival & Sundowner Ritual',
-  'Met at Wilson Airport for a scenic 45-minute bush flight over the Rift Valley. Your private guide awaits at the airstrip with a chilled towel and fresh juice. Afternoon game drive through the golden savannah, arriving at Angama Mara in time for a champagne sundowner on the Escarpment as the sun melts into Tanzania.',
-  'Angama Mara', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Dinner'], ARRAY['Private bush flight','Sundowner on the Escarpment','Evening game drive']
-),
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 2,
-  'Dawn Ballooning Over the Mara',
-  'Rise at 5am for a pre-dawn transfer to the launch site. Float silently over lion prides and elephant herds as the Mara wakes below you — an hour of absolute silence broken only by the hiss of the burner. Land in the long grass for a champagne bush breakfast prepared by your personal chef. Afternoon: optional fly-camping on a private hill.',
-  'Angama Mara', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Breakfast','Lunch','Dinner'], ARRAY['Private hot air balloon','Bush breakfast','Afternoon fly-camping option']
-),
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 3,
-  'Wildebeest Crossing, Front Row',
-  'Strategic positioning at the Mara River banks with your dedicated naturalist and a picnic cooler. Witness 1.5 million wildebeest thunder toward the crocodile-filled crossing — nature''s most dramatic spectacle. Your private vehicle means you stay until the last animal crosses, without competing for position.',
-  'Angama Mara', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Breakfast','Lunch','Dinner'], ARRAY['Migration river crossing','Crocodile watching','Picnic lunch on the riverbank']
-),
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 4,
-  'Maasai Community & Bead Ceremony',
-  'A private guided walk to a local Maasai enkiama. Learn about cattle-herding, traditional medicine, and the warrior initiation process. Participate in a bead-making ceremony with the women of the community — your beaded bracelet tells a story older than the written word. Proceeds fund 12 education bursaries annually.',
-  'Angama Mara', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Breakfast','Lunch','Dinner'], ARRAY['Maasai village walk','Bead-making ceremony','Cultural exchange lunch']
-),
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 5,
-  'Night Safari & Star Sleeping',
-  'Exclusive nocturnal game drive with a specialist night guide — spot aardvarks, porcupines, servals, and civet cats that vanish with the daylight. Return to camp for a private telescopic stargazing session with a visiting astronomer. Choose to sleep under the Milky Way on the camp''s elevated rooftop deck.',
-  'Angama Mara', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Breakfast','Lunch','Dinner'], ARRAY['Night game drive','Stargazing with astronomer','Optional rooftop sleeping']
-),
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 6,
-  'Cheetah Run & Big Cat Tracking',
-  'The Mara hosts the world''s highest cheetah density per km². Today you track the resident Tano Bora coalition alongside a wildlife researcher — and contribute real data to their conservation project. Afternoon at leisure, with the option of a spa treatment using indigenous botanicals or a sunset yoga session on the Escarpment edge.',
-  'Angama Mara', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Breakfast','Lunch','Dinner'], ARRAY['Cheetah research tracking','Conservation data collection','Optional spa or sunset yoga']
-),
-(
-  (SELECT id FROM tours WHERE slug = 'mara-private-immersion'), 7,
-  'Farewell Bush Breakfast & Departure',
-  'A final 90-minute sunrise game drive — always the best light, always the most active hour. A bush breakfast is laid out in the long grass as the Mara awakens around you. Private charter flight back to Nairobi Wilson. On landing, your naturalist emails a personalised wildlife journal compiling every sighting from your seven days.',
-  'Departure', (SELECT id FROM destinations WHERE slug = 'maasai-mara'),
-  ARRAY['Breakfast'], ARRAY['Sunrise game drive','Bush breakfast','Private charter return flight']
-);
+-- Itinerary Days - simplified for multiple tours
+-- Sample days for tours (guide structure, can be expanded per tour)
 
 -- Wildlife Sightings (for ticker)
 INSERT INTO wildlife_sightings (animal, description, destination_id, spotted_at) VALUES

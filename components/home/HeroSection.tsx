@@ -51,6 +51,22 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
     video.load()
     video.play().catch(() => {}) // Autoplay may be blocked — gradient fallback handles this
   }, [activeTier])
+  // Auto-cycle through the tiers every 8 seconds
+  useEffect(() => {
+    const tierKeys = ['sovereign', 'horizon', 'tribe'];
+    
+    const cycleTimer = setInterval(() => {
+      setActiveTier((currentTier) => {
+        const currentIndex = tierKeys.indexOf(currentTier);
+        // Get the next index, and loop back to 0 if we hit the end
+        const nextIndex = (currentIndex + 1) % tierKeys.length;
+        return tierKeys[nextIndex];
+      });
+    }, 20000); // 20000 milliseconds = 20 seconds
+
+    // Cleanup the timer if the user leaves the page
+    return () => clearInterval(cycleTimer);
+  }, []);
 
   return (
     <section className="relative w-full h-screen min-h-[700px] overflow-hidden flex flex-col items-center justify-center">

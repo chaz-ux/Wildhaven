@@ -10,10 +10,10 @@ import Link from 'next/link'
 export const revalidate = 60 // ISR: revalidate every 60s
 
 export default async function HomePage() {
-  const [tiers, tours, sightings] = await Promise.all([
+  const [tiers, tours] = await Promise.all([
     getTiers(),
     getFeaturedTours(),
-    getWildlifeSightings(),
+    
   ])
 
   return (
@@ -21,8 +21,7 @@ export default async function HomePage() {
       {/* 1. Cinematic hero with video */}
       <HeroSection tiers={tiers} />
 
-      {/* 2. Live wildlife ticker */}
-      <WildlifeTicker sightings={sightings} />
+      
 
       {/* 3. Tier vibe selector */}
       <VibeSelector tiers={tiers} />

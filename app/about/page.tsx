@@ -9,25 +9,25 @@ export const metadata: Metadata = {
 
 const TEAM = [
   {
-    name: 'Joseph Kamau',
+    name: 'Kipchoge Arap Yego',
     role: 'Head Safari Guide — Maasai Mara',
     years: '18 years in the field',
-    bio: 'Joseph grew up on the Mara\'s eastern edge. He has guided over 2,000 safaris and holds a Kenya Professional Safari Guides Association platinum rating — the highest in the country.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
+    bio: 'Kipchoge was born in the Kerio Valley and has guided over 2,000 safaris across the Mara ecosystem. He holds a Kenya Professional Safari Guides Association platinum rating — the highest in the country — and speaks fluent Swahili, Kalenjin, and English.',
+    image: 'https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg?w=400&q=80',
   },
   {
-    name: 'Akinyi Odhiambo',
+    name: 'Naserian Ole Tipis',
     role: 'Concierge Director',
     years: '12 years crafting safaris',
-    bio: 'Akinyi has personally slept in every camp Wildhaven recommends. She designs every Sovereign-tier itinerary from scratch and refuses to recommend anything she wouldn\'t give her own family.',
-    image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=80',
+    bio: 'Naserian grew up on the edge of Amboseli in a Maasai family with deep ties to the conservancy system. She designs every Sovereign-tier itinerary personally and has slept in every camp Wildhaven recommends — refusing to suggest anywhere she would not take her own family.',
+    image: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?w=400&q=80',
   },
   {
-    name: 'David Mwangi',
+    name: 'Lerionka Santian',
     role: 'Lead Naturalist — Tanzania',
     years: '15 years, Serengeti specialist',
-    bio: 'David studied zoology at Nairobi University and spent three years with the Serengeti Lion Project. His ability to predict migration movement has become the stuff of Wildhaven legend.',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
+    bio: 'Lerionka is Samburu-born and studied zoology at the University of Nairobi before spending three years embedded with the Serengeti Lion Project. His ability to read animal movement patterns has become the stuff of Wildhaven legend among returning guests.',
+    image: 'https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?w=400&q=80',
   },
 ]
 

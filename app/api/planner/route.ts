@@ -10,16 +10,16 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            maxOutputTokens: 800,
+            maxOutputTokens: 2000,
             temperature: 0.8,
-          },
+          }
         }),
       }
     )
@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
 
     // Gemini response: candidates[0].content.parts[0].text
     const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+
+    console.log("🚦 FINISH REASON:", data.candidates?.[0]?.finishReason)
 
     return NextResponse.json({ content })
   } catch (err) {

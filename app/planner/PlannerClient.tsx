@@ -32,12 +32,12 @@ const STEPS = [
     hint: "Select everything that excites you.",
     type: 'multi',
     options: [
-      { value: 'big5',      icon: '🦁', label: 'Big Five' },
-      { value: 'migration', icon: '🦬', label: 'Great Migration' },
-      { value: 'cheetah',   icon: '🐆', label: 'Cheetah & Cats' },
-      { value: 'elephant',  icon: '🐘', label: 'Elephant Herds' },
-      { value: 'birdlife',  icon: '🦜', label: 'Bird Life' },
-      { value: 'culture',   icon: '🏹', label: 'Maasai Culture' },
+      { value: 'big5',      icon: '🦁', label: 'Big Five', sub: undefined },
+      { value: 'migration', icon: '🦬', label: 'Great Migration', sub: undefined },
+      { value: 'cheetah',   icon: '🐆', label: 'Cheetah & Cats', sub: undefined },
+      { value: 'elephant',  icon: '🐘', label: 'Elephant Herds', sub: undefined },
+      { value: 'birdlife',  icon: '🦜', label: 'Bird Life', sub: undefined },
+      { value: 'culture',   icon: '🏹', label: 'Maasai Culture', sub: undefined },
     ],
   },
   {
@@ -122,7 +122,7 @@ Be specific, use real place names, max 280 words.`
     }
   }
 
-  const inputCls = "w-full bg-white/3 border border-white/10 text-ivory placeholder:text-ivory/20 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors"
+  const inputCls = "w-full bg-charcoal border border-white/15 text-ivory placeholder:text-ivory/30 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors"
 
   return (
     <div className="min-h-screen bg-charcoal-mid flex flex-col">
