@@ -24,12 +24,47 @@ export function timeAgo(dateStr: string): string {
 // Pexels / Unsplash image URLs by destination slug
 // Replace these with actual downloaded images in /public/images/
 export const DESTINATION_IMAGES: Record<string, string> = {
-  'maasai-mara':  'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1600&q=80',
-  'amboseli':     'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1600&q=80',
-  'serengeti':    'https://images.unsplash.com/photo-1504945005722-33670dcaf685?w=1600&q=80',
-  'ngorongoro':   'https://images.unsplash.com/photo-1521651201144-634f700b36ef?w=1600&q=80',
-  'samburu':      'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=1600&q=80',
-  'tsavo':        'https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?w=1600&q=80',
+  // Maasai Mara — wildebeest migration, open savannah
+  'maasai-mara':    'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1600&q=80',
+  
+  // Amboseli — elephants with Kilimanjaro backdrop
+  'amboseli':       'https://images.unsplash.com/photo-1521651201144-634f700b36ef?w=1600&q=80',
+  
+  // Serengeti — vast golden plains, Tanzania
+  'serengeti':      'https://images.unsplash.com/photo-1504945005722-33670dcaf685?w=1600&q=80',
+  
+  // Ngorongoro — crater floor, Tanzania
+  'ngorongoro':     'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1600&q=80',
+  
+  // Samburu — dry northern Kenya, acacia, river
+  'samburu':        'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=1600&q=80',
+  
+  // Tsavo — red earth, baobab trees
+  'tsavo':          'https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?w=1600&q=80',
+  
+  // Lake Naivasha — green freshwater lake, hippos
+  'lake-naivasha':  'https://images.unsplash.com/photo-1612968609497-e51f2c1c4e14?w=1600&q=80',
+  
+  // Lake Nakuru — flamingos on soda lake
+  'lake-nakuru':    'https://images.unsplash.com/photo-1551969014-7d2c4cdcfeef?w=1600&q=80',
+  
+  // Hell's Gate — volcanic gorge, dramatic cliffs
+  'hells-gate':     'https://images.unsplash.com/photo-1580746738099-b2d16e4f7a7e?w=1600&q=80',
+  
+  // Taita Hills — lodge on stilts, savannah at dusk
+  'taita-hills':    'https://images.unsplash.com/photo-1503516459261-40c66117780a?w=1600&q=80',
+  
+  // Laikipia / Ol Pejeta — open conservancy, rhino country
+  'laikipia':       'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=1600&q=80',
+  
+  // Mombasa Coast — turquoise Indian Ocean, white sand Diani
+  'mombasa-coast':  'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1600&q=80',
+  
+  // Mount Kenya — snow-capped peak, alpine forest
+  'mount-kenya':    'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=1600&q=80',
+  
+  // Aberdare — misty mountain forest, waterfall
+  'aberdare':       'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80',
 }
 
 // Fallback videos from Coverr/Pexels (replace with your own downloads)
