@@ -38,8 +38,8 @@ html {
 }
 
 body {
-  background-color: #F5E6D3;
-  color: #1A0F05;
+  background-color: #8B4513;
+  color: #FFFBF7;
   font-family: var(--font-dm-sans);
   font-weight: 300;
   overflow-x: hidden;
@@ -82,52 +82,52 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: #F5E6D3;
+  background: #8B4513;
   transform: translateY(100%);
   pointer-events: none;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #E8D7C3; }
+::-webkit-scrollbar-track { background: #6B3410; }
 ::-webkit-scrollbar-thumb { background: var(--color-gold); border-radius: 2px; }
 
 /* ─── Selection ──────────────────────────────────────────────────────────── */
-::selection { background: rgba(255, 140, 66, 0.3); color: #1A0F05; }
+::selection { background: rgba(255, 184, 28, 0.3); color: #FFFBF7; }
 
 /* ─── Typography ─────────────────────────────────────────────────────────── */
 .font-serif { font-family: var(--font-cormorant); }
 .font-sans  { font-family: var(--font-dm-sans); }
 
 /* ─── Gold Theme Color Overrides ────────────────────────────────────────── */
-/* All text must be dark/readable on gold background */
-.text-ivory { color: #1A0F05; }
-.text-ivory\/50 { color: rgba(26, 15, 5, 0.5); }
-.text-ivory\/60 { color: rgba(26, 15, 5, 0.6); }
-.text-ivory\/25 { color: rgba(26, 15, 5, 0.25); }
-.text-ivory\/30 { color: rgba(26, 15, 5, 0.3); }
-.text-ivory\/35 { color: rgba(26, 15, 5, 0.35); }
-.text-ivory\/40 { color: rgba(26, 15, 5, 0.4); }
-.text-ivory\/70 { color: rgba(26, 15, 5, 0.7); }
+/* All text must be light/readable on dark background */
+.text-ivory { color: #FFFBF7; }
+.text-ivory\/50 { color: rgba(255, 251, 247, 0.5); }
+.text-ivory\/60 { color: rgba(255, 251, 247, 0.6); }
+.text-ivory\/25 { color: rgba(255, 251, 247, 0.25); }
+.text-ivory\/30 { color: rgba(255, 251, 247, 0.3); }
+.text-ivory\/35 { color: rgba(255, 251, 247, 0.35); }
+.text-ivory\/40 { color: rgba(255, 251, 247, 0.4); }
+.text-ivory\/70 { color: rgba(255, 251, 247, 0.7); }
 
-/* Background colors for gold theme */
-.bg-charcoal { background-color: #E8D7C3; }
-.bg-charcoal\/50 { background-color: rgba(232, 215, 195, 0.5); }
-.bg-charcoal\/80 { background-color: rgba(232, 215, 195, 0.8); }
-.bg-charcoal-mid { background-color: #F0E6D3; }
-.bg-charcoal-light { background-color: #F7EFE5; }
+/* Background colors for terracotta theme */
+.bg-charcoal { background-color: #6B3410; }
+.bg-charcoal\/50 { background-color: rgba(107, 52, 16, 0.5); }
+.bg-charcoal\/80 { background-color: rgba(107, 52, 16, 0.8); }
+.bg-charcoal-mid { background-color: #8B4513; }
+.bg-charcoal-light { background-color: #A0541F; }
 
-/* Border colors for gold theme */
-.border-white\/5 { border-color: rgba(26, 15, 5, 0.08); }
-.border-white\/6 { border-color: rgba(26, 15, 5, 0.12); }
-.border-white\/10 { border-color: rgba(26, 15, 5, 0.15); }
-.border-white\/15 { border-color: rgba(26, 15, 5, 0.2); }
+/* Border colors for terracotta theme */
+.border-white\/5 { border-color: rgba(255, 251, 247, 0.08); }
+.border-white\/6 { border-color: rgba(255, 251, 247, 0.12); }
+.border-white\/10 { border-color: rgba(255, 251, 247, 0.15); }
+.border-white\/15 { border-color: rgba(255, 251, 247, 0.2); }
 
-/* Glass morphism for gold theme */
+/* Glass morphism for terracotta theme */
 .glass {
-  background: rgba(244, 232, 216, 0.5) !important;
+  background: rgba(139, 69, 19, 0.6) !important;
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(26, 15, 5, 0.1) !important;
+  border: 1px solid rgba(255, 251, 247, 0.1) !important;
 }
 
 /* ─── Reveal Animations ──────────────────────────────────────────────────── */

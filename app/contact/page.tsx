@@ -100,10 +100,28 @@ function ContactForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <label className={labelClass}>Preferred Tier</label>
-              <select value={form.preferred_tier} onChange={e => set('preferred_tier', e.target.value)} className={selectClass}>
-                <option value="">Select your tier…</option>
-                {TIERS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-              </select>
+              <div className="space-y-2">
+                {TIERS.map(t => (
+                  <label key={t.value} className="flex items-start gap-3 p-3 border border-white/10 rounded-sm cursor-pointer hover:bg-white/3 transition-colors duration-200" style={{ background: form.preferred_tier === t.value ? 'rgba(255, 184, 28, 0.05)' : 'transparent' }}>
+                    <input
+                      type="radio"
+                      name="tier"
+                      value={t.value}
+                      checked={form.preferred_tier === t.value}
+                      onChange={e => set('preferred_tier', e.target.value)}
+                      className="mt-1 flex-shrink-0 w-4 h-4"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm text-ivory font-light">{t.label}</p>
+                      <p className="text-[0.65rem] text-ivory/40 mt-0.5">
+                        {t.value === 'sovereign' && 'Private luxury, max 2 guests per vehicle, butler service'}
+                        {t.value === 'horizon' && 'Authentic comfort, up to 6 guests, expert guides'}
+                        {t.value === 'tribe' && 'Social adventure, shared vehicles, community vibes'}
+                      </p>
+                    </div>
+                  </label>
+                ))}
+              </div>
             </div>
             <div>
               <label className={labelClass}>Budget per Person</label>

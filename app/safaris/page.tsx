@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getAllTours } from '@/lib/data'
 import TourGrid from '@/components/home/TourGrid'
+import QuickNavigation from '@/components/layout/QuickNavigation'
 
 export const metadata: Metadata = {
   title: 'Safari Experiences',
@@ -19,6 +20,8 @@ export default async function SafarisPage({
 
   return (
     <>
+      <QuickNavigation pageName="Safari Experiences" tierSlug={params.tier} />
+      
       {/* Page hero */}
       <section className="relative pt-40 pb-20 px-6 bg-charcoal overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal-mid to-charcoal" />

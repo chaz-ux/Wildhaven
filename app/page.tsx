@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import HeroSection from '@/components/home/HeroSection'
 import WildlifeTicker from '@/components/home/WildlifeTicker'
 import VibeSelector from '@/components/home/VibeSelector'
+import TierGuide from '@/components/home/TierGuide'
 import TourGrid from '@/components/home/TourGrid'
 import TrustBanner from '@/components/home/TrustBanner'
 import { getTiers, getFeaturedTours, getWildlifeSightings } from '@/lib/data'
@@ -25,6 +26,9 @@ export default async function HomePage() {
 
       {/* 3. Tier vibe selector */}
       <VibeSelector tiers={tiers} />
+
+      {/* 3b. Tier comparison guide */}
+      <TierGuide />
 
       {/* 4. Featured tour grid */}
       <TourGrid tours={tours} />
