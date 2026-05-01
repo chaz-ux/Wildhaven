@@ -21,50 +21,65 @@ export function timeAgo(dateStr: string): string {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
-// Pexels / Unsplash image URLs by destination slug
-// Replace these with actual downloaded images in /public/images/
+// Pexels image URLs by destination slug
+// All sourced from Pexels — free to use with no attribution required
+// High-quality wildlife photography from Kenya and East African safaris
 export const DESTINATION_IMAGES: Record<string, string> = {
-  // Maasai Mara — wildebeest migration, open savannah
-  'maasai-mara':    'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1600&q=80',
-  
-  // Amboseli — elephants with Kilimanjaro backdrop
-  'amboseli':       'https://images.unsplash.com/photo-1521651201144-634f700b36ef?w=1600&q=80',
-  
-  // Serengeti — vast golden plains, Tanzania
-  'serengeti':      'https://images.unsplash.com/photo-1504945005722-33670dcaf685?w=1600&q=80',
-  
-  // Ngorongoro — crater floor, Tanzania
-  'ngorongoro':     'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1600&q=80',
-  
-  // Samburu — dry northern Kenya, acacia, river
-  'samburu':        'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=1600&q=80',
-  
-  // Tsavo — red earth, baobab trees
-  'tsavo':          'https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?w=1600&q=80',
-  
-  // Lake Naivasha — green freshwater lake, hippos
-  'lake-naivasha':  'https://images.unsplash.com/photo-1612968609497-e51f2c1c4e14?w=1600&q=80',
-  
-  // Lake Nakuru — flamingos on soda lake
-  'lake-nakuru':    'https://images.unsplash.com/photo-1551969014-7d2c4cdcfeef?w=1600&q=80',
-  
-  // Hell's Gate — volcanic gorge, dramatic cliffs
-  'hells-gate':     'https://images.unsplash.com/photo-1580746738099-b2d16e4f7a7e?w=1600&q=80',
-  
-  // Taita Hills — lodge on stilts, savannah at dusk
-  'taita-hills':    'https://images.unsplash.com/photo-1503516459261-40c66117780a?w=1600&q=80',
-  
-  // Laikipia / Ol Pejeta — open conservancy, rhino country
-  'laikipia':       'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=1600&q=80',
-  
-  // Mombasa Coast — turquoise Indian Ocean, white sand Diani
-  'mombasa-coast':  'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1600&q=80',
-  
-  // Mount Kenya — snow-capped peak, alpine forest
-  'mount-kenya':    'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=1600&q=80',
-  
-  // Aberdare — misty mountain forest, waterfall
-  'aberdare':       'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80',
+  // Maasai Mara — majestic male lion striding through golden savannah grass
+  // Source: pexels.com/photo/majestic-lion-in-the-maasai-mara-grasslands-28924821
+  'maasai-mara':   'https://images.pexels.com/photos/28924821/pexels-photo-28924821.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Amboseli — elephant herd with Kilimanjaro backdrop (the iconic shot)
+  // Source: pexels.com/photo/mount-kilimanjaro-in-tanzania-8427984 (Sergey Pesterev, Kajiado County, Kenya)
+  'amboseli':      'https://images.pexels.com/photos/8427984/pexels-photo-8427984.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Serengeti — wildebeest river crossing, Mara River
+  // Source: pexels.com/photo/herd-of-wildebeest-on-the-river-12339600
+  'serengeti':     'https://images.pexels.com/photos/12339600/pexels-photo-12339600.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Ngorongoro — male lion resting in Serengeti/Ngorongoro ecosystem (Tomáš Malík)
+  // Source: pexels.com/photo/male-lion-resting-in-serengeti-savanna-10399169
+  'ngorongoro':    'https://images.pexels.com/photos/10399169/pexels-photo-10399169.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Samburu — two rhinos in Kenya savannah near Nairobi (Ethan Ngure, Kenya)
+  // Source: pexels.com/photo/rhinos-covered-in-mud-near-lake-26052069
+  'samburu':       'https://images.pexels.com/photos/26052069/pexels-photo-26052069.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Tsavo — elephant at waterhole, African savannah
+  // Source: pexels.com/photo/elephant-on-green-grass-field-5267250
+  'tsavo':         'https://images.pexels.com/photos/5267250/pexels-photo-5267250.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Lake Naivasha — elephant on brown grass field, Kenya plains
+  // Source: pexels.com/photo/elephant-on-brown-grass-field-609749
+  'lake-naivasha': 'https://images.pexels.com/photos/609749/pexels-photo-609749.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Lake Nakuru — large African elephant portrait, green grass, Kenya
+  // Source: pexels.com/photo/photo-of-a-big-african-elephant-on-green-grass-7781629
+  'lake-nakuru':   'https://images.pexels.com/photos/7781629/pexels-photo-7781629.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Hell's Gate — grayscale elephants (Casey Allen — timeless Kenya wildlife)
+  // Source: pexels.com/photo/grayscale-photography-of-elephants-16023
+  'hells-gate':    'https://images.pexels.com/photos/16023/pexels-photo-16023.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Taita Hills — elephant walking on grass field, Serengeti/Tanzania
+  // Source: pexels.com/photo/an-elephant-walking-on-a-grass-field-7001091
+  'taita-hills':   'https://images.pexels.com/photos/7001091/pexels-photo-7001091.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Laikipia — elephant close-up portrait, grey savanna
+  // Source: pexels.com/photo/grayscale-photo-of-elephant-842729
+  'laikipia':      'https://images.pexels.com/photos/842729/pexels-photo-842729.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Mombasa Coast — African elephant drinking at waterhole (open savannah)
+  // Source: pexels.com/photo/an-african-elephant-on-the-grass-9518321
+  'mombasa-coast': 'https://images.pexels.com/photos/9518321/pexels-photo-9518321.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Mount Kenya — lion cubs in Maasai Mara grasslands (playful, familial)
+  // Source: pexels.com/photo/playful-lion-cubs-in-maasai-mara-grasslands-30705114
+  'mount-kenya':   'https://images.pexels.com/photos/30705114/pexels-photo-30705114.jpeg?auto=compress&cs=tinysrgb&w=1600',
+
+  // Aberdare — lion rolling playfully in Maasai Mara savannah
+  // Source: pexels.com/photo/playful-lion-rolling-in-african-savannah-at-maasai-mara-28571447
+  'aberdare':      'https://images.pexels.com/photos/28571447/pexels-photo-28571447.jpeg?auto=compress&cs=tinysrgb&w=1600',
 }
 
 // Fallback videos from Coverr/Pexels (replace with your own downloads)

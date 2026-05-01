@@ -10,18 +10,18 @@
   --font-cormorant: 'Cormorant Garamond', Georgia, serif;
   --font-dm-sans: 'DM Sans', system-ui, sans-serif;
 
-  --color-charcoal: #1C1008;
-  --color-charcoal-mid: #2A1A0A;
-  --color-charcoal-light: #3D2810;
-  --color-ivory: #F7F0E4;
-  --color-ivory-warm: #EDE0C8;
-  --color-gold: #D4820A;
-  --color-gold-light: #E8A32A;
-  --color-gold-dark: #A0600A;
-  --color-amber: #C4501A;
-  --color-sage: #8A7A50;
-  --color-sage-light: #C4B080;
-  --color-sand: #D4B896;
+  --color-charcoal: #2D1810;
+  --color-charcoal-mid: #3D2416;
+  --color-charcoal-light: #4A2F1F;
+  --color-ivory: #F2E8D8;
+  --color-ivory-warm: #E8DCC8;
+  --color-gold: #FFB81C;
+  --color-gold-light: #FFD149;
+  --color-gold-dark: #E8A000;
+  --color-amber: #FF8C42;
+  --color-sage: #4A6B4F;
+  --color-sage-light: #6B8D70;
+  --color-sand: #D4A574;
 
   --ease-cinematic: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -38,8 +38,8 @@ html {
 }
 
 body {
-  background-color: var(--color-charcoal);
-  color: var(--color-ivory);
+  background-color: #F5E6D3;
+  color: #1A0F05;
   font-family: var(--font-dm-sans);
   font-weight: 300;
   overflow-x: hidden;
@@ -64,7 +64,7 @@ body {
 .cursor-ring {
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(196, 80, 26, 0.4);
+  border: 1px solid rgba(255, 107, 53, 0.6);
   border-radius: 50%;
   position: fixed;
   top: 0; left: 0;
@@ -82,22 +82,53 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: var(--color-charcoal);
+  background: #F5E6D3;
   transform: translateY(100%);
   pointer-events: none;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--color-charcoal-mid); }
-::-webkit-scrollbar-thumb { background: var(--color-gold-dark); border-radius: 2px; }
+::-webkit-scrollbar-track { background: #E8D7C3; }
+::-webkit-scrollbar-thumb { background: var(--color-gold); border-radius: 2px; }
 
 /* ─── Selection ──────────────────────────────────────────────────────────── */
-::selection { background: rgba(201,168,76,0.25); color: var(--color-ivory); }
+::selection { background: rgba(255, 140, 66, 0.3); color: #1A0F05; }
 
 /* ─── Typography ─────────────────────────────────────────────────────────── */
 .font-serif { font-family: var(--font-cormorant); }
 .font-sans  { font-family: var(--font-dm-sans); }
+
+/* ─── Gold Theme Color Overrides ────────────────────────────────────────── */
+/* All text must be dark/readable on gold background */
+.text-ivory { color: #1A0F05; }
+.text-ivory\/50 { color: rgba(26, 15, 5, 0.5); }
+.text-ivory\/60 { color: rgba(26, 15, 5, 0.6); }
+.text-ivory\/25 { color: rgba(26, 15, 5, 0.25); }
+.text-ivory\/30 { color: rgba(26, 15, 5, 0.3); }
+.text-ivory\/35 { color: rgba(26, 15, 5, 0.35); }
+.text-ivory\/40 { color: rgba(26, 15, 5, 0.4); }
+.text-ivory\/70 { color: rgba(26, 15, 5, 0.7); }
+
+/* Background colors for gold theme */
+.bg-charcoal { background-color: #E8D7C3; }
+.bg-charcoal\/50 { background-color: rgba(232, 215, 195, 0.5); }
+.bg-charcoal\/80 { background-color: rgba(232, 215, 195, 0.8); }
+.bg-charcoal-mid { background-color: #F0E6D3; }
+.bg-charcoal-light { background-color: #F7EFE5; }
+
+/* Border colors for gold theme */
+.border-white\/5 { border-color: rgba(26, 15, 5, 0.08); }
+.border-white\/6 { border-color: rgba(26, 15, 5, 0.12); }
+.border-white\/10 { border-color: rgba(26, 15, 5, 0.15); }
+.border-white\/15 { border-color: rgba(26, 15, 5, 0.2); }
+
+/* Glass morphism for gold theme */
+.glass {
+  background: rgba(244, 232, 216, 0.5) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(26, 15, 5, 0.1) !important;
+}
 
 /* ─── Reveal Animations ──────────────────────────────────────────────────── */
 .reveal-hidden {

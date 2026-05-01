@@ -43,7 +43,6 @@ const REVIEWS = [
 
 const PARTNERS = [
   { name: 'Savanna Sojourns', role: 'Ground Operations Partner', desc: 'Nairobi-based, 5.0★ rated operator handling all ground logistics, guides, and vehicles.' },
-  { name: 'Pollman\'s Tours & Safaris', role: 'Scheduled Safari Partner', desc: "Kenya's most experienced tour operator, founded in the 1950s. World Travel Award winners." },
 ]
 
 const MILESTONES = [
