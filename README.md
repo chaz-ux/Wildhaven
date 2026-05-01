@@ -163,6 +163,34 @@ wildhaven/
 
 ---
 
+## Tier Clarity System
+
+The website includes a **4-layer navigation system** to help users understand the three safari tiers:
+
+1. **Home Page - VibeSelector** — Visual tier cards with key features
+2. **Home Page - TierGuide** — Interactive comparison with pricing, features, and "who it's for"
+3. **Safaris Page - TierExplainer** — Context-aware explanation when filtering by tier
+4. **Contact Form** — Radio buttons with tier descriptions for clear selection
+
+### Components:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `VibeSelector.tsx` | `components/home/` | Three tier cards with icons and features |
+| `TierGuide.tsx` | `components/home/` | Detailed tier comparison with pricing |
+| `TierExplainer.tsx` | `components/home/` | Inline tier explanation on safaris page |
+| `QuickNavigation.tsx` | `components/layout/` | Sticky breadcrumb with tier switcher |
+
+### How users navigate:
+- **Comparing tiers?** → TierGuide shows side-by-side pricing/features
+- **Browsing safaris?** → TierExplainer clarifies what tier means before showing results
+- **Switching tiers?** → QuickNavigation breadcrumb has quick tier buttons
+- **Booking?** → Contact form shows tier options with descriptions
+
+All tier information is centralized—update pricing/features in one place, changes appear everywhere.
+
+---
+
 ## Updating content (no code needed)
 
 Once live, all content can be updated via the **Supabase Dashboard → Table Editor**:
