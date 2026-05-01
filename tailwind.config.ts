@@ -10,28 +10,33 @@ const config: Config = {
     extend: {
       colors: {
         charcoal: {
-          DEFAULT: '#1A1A18',
-          mid: '#2E2E2A',
-          light: '#4A4A44',
+          DEFAULT: '#1C1008',
+          mid: '#2A1A0A',
+          light: '#3D2810',
         },
         ivory: {
-          DEFAULT: '#F5F0E8',
-          warm: '#EDE3D2',
+          DEFAULT: '#F7F0E4',
+          warm: '#EDE0C8',
         },
         gold: {
-          DEFAULT: '#C9A84C',
-          light: '#E8D08A',
-          dark: '#9A7A28',
+          DEFAULT: '#D4820A',
+          light: '#E8A32A',
+          dark: '#A0600A',
+        },
+        amber: {
+          DEFAULT: '#C4501A',
+          light: '#E07040',
+          dark: '#8C3010',
         },
         sage: {
-          DEFAULT: '#7A8C6E',
-          light: '#B5C4A8',
-          dark: '#3D4F34',
+          DEFAULT: '#8A7A50',
+          light: '#C4B080',
+          dark: '#5A5030',
         },
         sand: {
-          DEFAULT: '#C8B49A',
-          light: '#EDE3D6',
-          dark: '#8C7660',
+          DEFAULT: '#D4B896',
+          light: '#EDD8C0',
+          dark: '#A08060',
         },
       },
       fontFamily: {

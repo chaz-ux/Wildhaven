@@ -86,25 +86,43 @@ export default function PlannerClient() {
   const generate = async () => {
     if (!email) return
     setLoading(true)
-    const prompt = `You are Wildhaven's elite safari concierge AI. A traveller completed our questionnaire:
-Travel style: ${answers.style || 'undecided'}
-Budget per person: $${answers.budget}
-Wildlife interests: ${answers.animals.join(', ') || 'all wildlife'}
-Trip duration: ${answers.duration || '5-7 days'}
-Name: ${name || 'Guest'}
+    const prompt = `You are a friendly, knowledgeable safari planning assistant for Wildhaven Kenya. 
+A visitor has shared their preferences:
+- Travel style: ${answers.style || 'not specified'}
+- Budget: $${answers.budget} per person
+- Interests: ${answers.animals.join(', ') || 'general wildlife'}
+- Duration: ${answers.duration || '5-7 days'}
+- Name: ${name || 'there'}
 
-Create a personalised safari Dream Board using ONLY these HTML tags (no markdown, no backticks):
-<h3>Welcome, [Name]</h3>
-<p>[Warm 2-sentence intro about their specific preferences]</p>
-<h3>Your Recommended Tier</h3>
-<p>[Recommend sovereign/horizon/tribe based on budget + style, with specific reasoning]</p>
-<h3>Dream Itinerary: [Evocative Title]</h3>
-<p>[Specific destination and why it matches their interests]</p>
-<ul><li><strong>Day 1–2:</strong> [Activity]</li><li><strong>Day 3–4:</strong> [Activity]</li><li><strong>Day 5+:</strong> [Activity]</li></ul>
-<h3>Best Time to Visit</h3>
-<p>[Specific months with reason tied to their animal priorities]</p>
-<p><em>[Evocative closing line from a seasoned safari guide]</em></p>
-Be specific, use real place names, max 280 words.`
+You have access to these exact packages Wildhaven offers:
+
+1. 4-Day Maasai Mara Luxury Safari — Ashnil Mara Lodge — $2,744/pp
+   Includes: Full board, daily private game drives, Big Five, park fees, airport transfers
+   
+2. 7-Day Family Safari at Sopa Lodges — $2,672/pp  
+   Route: Nairobi → Amboseli → Tsavo → Maasai Mara
+   Includes: Sopa Lodges throughout, all meals, private 4x4, park fees
+   
+3. 5-Day Mara, Nakuru & Hell's Gate — $1,568/pp
+   Route: Nairobi → Nakuru → Hell's Gate → Maasai Mara
+   Includes: All accommodation, meals, private vehicle, park fees
+
+4. 5-Day Rift Valley Tour — $1,420/pp
+   Lake Nakuru, Lake Naivasha, Hell's Gate Gorge, scenic Rift Valley
+
+5. 7-Day Kenya Classic Safari — $2,190/pp
+   Amboseli, Tsavo, Maasai Mara circuit
+
+6. 8-Day Kenya Odyssey to Mombasa — $2,480/pp
+   Safari parks + Diani Beach finale
+
+7. 5-Day Taita Hills & Salt Lick — $1,680/pp
+   Amboseli, Taita Hills Lodge (on stilts), Mombasa coast
+
+8. 4-Day Ol Pejeta Conservancy — $3,200/pp
+   Last northern white rhinos, wild dog tracking, Big Five
+
+Respond warmly and helpfully. Recommend 1-2 specific packages by name with reasons tied to their preferences. Explain what they'll see, what meals/transfers are included, and why the pace matches their travel style. If their budget is below $1,568, suggest ways to make it work or mention the 5-day options. Use plain HTML only: <h3>, <p>, <strong>, <ul>, <li>. Max 300 words. Sound like a knowledgeable human travel advisor, not a brochure.`
 
     try {
       const res = await fetch('/api/planner', {
