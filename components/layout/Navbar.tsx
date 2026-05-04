@@ -50,7 +50,7 @@ export default function Navbar() {
               className="text-2xl tracking-[0.12em] text-ivory transition-colors duration-300"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}
             >
-              Wild<span className="text-gold">haven</span>
+              Zazu <span className="text-gold">Safaris</span>
             </span>
           </Link>
 
