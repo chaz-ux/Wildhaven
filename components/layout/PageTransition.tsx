@@ -38,7 +38,7 @@ export default function PageTransition() {
           className="font-serif text-gold/40 text-2xl tracking-[0.3em]"
           style={{ fontFamily: 'var(--font-cormorant)' }}
         >
-          WILDHAVEN
+          ZAZU SAFARIS
         </span>
       </div>
     </div>

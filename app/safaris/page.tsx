@@ -5,7 +5,7 @@ import QuickNavigation from '@/components/layout/QuickNavigation'
 
 export const metadata: Metadata = {
   title: 'Safari Experiences',
-  description: 'Browse all Wildhaven safari experiences across Kenya and Tanzania. From private luxury conservancies to social group adventures.',
+  description: 'Browse all Zazu Safaris experiences across Kenya and Tanzania. From private luxury conservancies to social group adventures.',
 }
 
 export const revalidate = 60

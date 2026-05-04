@@ -1,4 +1,4 @@
-# 🌿 Wildhaven Safari — Full Setup Guide
+# 🌿 Zazu Safaris — Full Setup Guide
 
 ## Stack
 - **Next.js 15** (App Router, TypeScript)

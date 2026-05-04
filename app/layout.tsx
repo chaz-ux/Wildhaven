@@ -9,13 +9,13 @@ import SmoothScroll from '@/components/layout/SmoothScroll'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Wildhaven — Feel the Wild',
-    template: '%s | Wildhaven Safari',
+    default: 'Zazu Safaris — Feel the Wild',
+    template: '%s | Zazu Safaris',
   },
   description: "East Africa's premier safari concierge. Bespoke journeys across Kenya & Tanzania — from private conservancies to social group adventures.",
   keywords: ['safari', 'Kenya', 'Tanzania', 'Maasai Mara', 'Serengeti', 'luxury safari', 'wildlife'],
   openGraph: {
-    title: "Wildhaven — Don't Just See the Wild. Feel It.",
+    title: "Zazu Safaris — Don't Just See the Wild. Feel It.",
     description: "Bespoke safari experiences across Kenya & Tanzania for every traveller.",
     type: 'website',
     locale: 'en_US',

@@ -86,7 +86,7 @@ export default function PlannerClient() {
   const generate = async () => {
     if (!email) return
     setLoading(true)
-    const prompt = `You are a friendly, knowledgeable safari planning assistant for Wildhaven Kenya. 
+    const prompt = `You are a friendly, knowledgeable safari planning assistant for Zazu Safaris Kenya. 
 A visitor has shared their preferences:
 - Travel style: ${answers.style || 'not specified'}
 - Budget: $${answers.budget} per person
@@ -94,7 +94,7 @@ A visitor has shared their preferences:
 - Duration: ${answers.duration || '5-7 days'}
 - Name: ${name || 'there'}
 
-You have access to these exact packages Wildhaven offers:
+You have access to these exact packages Zazu Safaris offers:
 
 1. 4-Day Maasai Mara Luxury Safari — Ashnil Mara Lodge — $2,744/pp
    Includes: Full board, daily private game drives, Big Five, park fees, airport transfers

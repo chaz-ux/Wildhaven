@@ -50,7 +50,7 @@ const MILESTONES = [
   { year: '2015', event: 'First Sovereign-tier partnership with private conservancy' },
   { year: '2017', event: '1,000th safari delivered. Celebrated on the Mara.' },
   { year: '2019', event: 'Expanded into Tanzania with Serengeti operations' },
-  { year: '2021', event: 'Launched Wildhaven Conservation Fund — 2% of every booking' },
+  { year: '2021', event: 'Launched Zazu Conservation Fund — 2% of every booking' },
   { year: '2023', event: '4,000+ safaris. 47 conservancy partners. Still growing.' },
 ]
 

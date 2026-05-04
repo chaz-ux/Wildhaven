@@ -6,7 +6,7 @@ export default function Loading() {
           className="text-2xl tracking-[0.3em] text-gold/30 animate-pulse"
           style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}
         >
-          WILDHAVEN
+          ZAZU SAFARIS
         </span>
         <div className="flex gap-1.5">
           {[0, 1, 2].map(i => (

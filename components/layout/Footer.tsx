@@ -98,7 +98,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/5 max-w-[1400px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-[0.7rem] text-ivory/20 font-light">
-          © {new Date().getFullYear()} Wildhaven East Africa Ltd. All rights reserved.
+          © {new Date().getFullYear()} Zazu Safaris East Africa Ltd. All rights reserved.
         </p>
         <div className="flex gap-5">
           {legalLinks.map(l => (
