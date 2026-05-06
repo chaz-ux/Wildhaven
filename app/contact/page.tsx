@@ -242,9 +242,9 @@ export default function ContactPage() {
                 <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors">@</span>
                 hello@zazusafaris.com
               </a>
-              <a href="tel:+254700000000" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
+              <a href="tel:+254141481665" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
                 <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors text-xs">☏</span>
-                +254 700 000 000
+                +254 141 481 665
               </a>
               <p className="text-[0.68rem] text-ivory/20">Mon–Sun · 7am–8pm East Africa Time</p>
             </div>

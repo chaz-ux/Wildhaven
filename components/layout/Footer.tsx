@@ -79,7 +79,7 @@ export default function Footer() {
               <a href="mailto:hello@zazusafaris.com">hello@zazusafaris.com</a>
             </li>
             <li className="hover:text-ivory transition-colors duration-300">
-              <a href="tel:+254700000000">+254 700 000 000</a>
+              <a href="tel:+254141481665">+254 141 481 665</a>
             </li>
             <li className="text-ivory/30">Nairobi, Kenya</li>
             <li className="text-ivory/30">Mon–Sun · 7am–8pm EAT</li>

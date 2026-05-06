@@ -35,7 +35,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_mapbox_token
 ANTHROPIC_API_KEY=sk-ant-your_key
-NEXT_PUBLIC_WHATSAPP_NUMBER=254700000000
+NEXT_PUBLIC_WHATSAPP_NUMBER=254141481665
 ```
 
 ### Where to get each key:
@@ -208,7 +208,7 @@ When you have a WhatsApp Business number:
 
 1. Update `.env.local`:
    ```
-   NEXT_PUBLIC_WHATSAPP_NUMBER=254700000000
+   NEXT_PUBLIC_WHATSAPP_NUMBER=254141481665
    NEXT_PUBLIC_WHATSAPP_MESSAGE=Hello! I'd like to book a safari.
    ```
 2. The floating concierge pod will automatically link to WhatsApp.

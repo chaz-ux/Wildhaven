@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
-const WA_NUMBER  = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER  || '254700000000'
+const WA_NUMBER  = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER  || '254141481665'
 const WA_MESSAGE = process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE || "Hello! I'd like to enquire about a safari booking."
 
 const channels = [
@@ -42,7 +42,7 @@ const channels = [
     ),
     label: 'Call Us',
     sublabel: 'Mon–Sun 7am–8pm',
-    href: 'tel:+254700000000',
+    href: 'tel:+254141481665',
     color: 'text-sage-light hover:bg-sage/10',
     external: false,
   },
