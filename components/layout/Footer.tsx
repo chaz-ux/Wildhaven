@@ -31,7 +31,7 @@ export default function Footer() {
               className="text-2xl tracking-[0.12em] text-ivory"
               style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}
             >
-              Wild<span className="text-gold">haven</span>
+              Zazu <span className="text-gold">Safaris</span>
             </span>
           </Link>
           <p className="mt-4 text-sm text-ivory/40 leading-relaxed font-light max-w-[220px]">
