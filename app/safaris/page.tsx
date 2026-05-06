@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from 'next'
 import { getAllTours } from '@/lib/data'
 import TourGrid from '@/components/home/TourGrid'
