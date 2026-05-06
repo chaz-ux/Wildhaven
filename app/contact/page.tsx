@@ -64,12 +64,25 @@ function ContactForm() {
     }
   }
 
-  const inputClass = "w-full bg-white/3 border border-white/10 text-ivory placeholder:text-ivory/20 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors duration-300"
-  const selectClass = "w-full bg-charcoal-mid border border-white/10 text-ivory/70 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors duration-300"
+  const inputClass = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/40 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 focus:bg-white/8 transition-colors duration-300"
+  const selectClass = "w-full bg-white/5 border border-white/20 text-ivory rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 focus:bg-white/8 transition-colors duration-300"
   const labelClass  = "block text-[0.62rem] tracking-[0.18em] uppercase text-ivory/30 mb-2"
 
   return (
-    <div>
+    <>
+      <style>{`
+        select option {
+          background-color: #1a1a1a;
+          color: #fffbf7;
+          padding: 8px;
+        }
+        select option:checked {
+          background: linear-gradient(#ffc41a, #ffc41a);
+          background-color: #ffc41a !important;
+          color: #1a1a1a;
+        }
+      `}</style>
+      <div>
       {!success ? (
         <div className="space-y-5">
           {/* Name + Email */}
@@ -191,6 +204,7 @@ function ContactForm() {
         </div>
       )}
     </div>
+    </>
   )
 }
 

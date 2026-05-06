@@ -140,7 +140,7 @@ Respond warmly and helpfully. Recommend 1-2 specific packages by name with reaso
     }
   }
 
-  const inputCls = "w-full bg-charcoal border border-white/15 text-ivory placeholder:text-ivory/30 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors"
+  const inputCls = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/40 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 focus:bg-white/8 transition-colors"
 
   return (
     <div className="min-h-screen bg-charcoal-mid flex flex-col">
