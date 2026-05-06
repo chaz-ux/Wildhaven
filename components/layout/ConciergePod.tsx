@@ -29,7 +29,7 @@ const channels = [
     ),
     label: 'Email Us',
     sublabel: 'Within 2 hours',
-    href: 'mailto:hello@zazusafaris.co.ke',
+    href: 'mailto:hello@zazusafaris.com',
     color: 'text-gold hover:bg-gold/10',
     external: false,
   },

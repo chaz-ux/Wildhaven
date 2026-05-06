@@ -238,9 +238,9 @@ export default function ContactPage() {
             {/* Direct contacts */}
             <div className="glass p-6 rounded-sm space-y-4">
               <p className="text-[0.62rem] tracking-[0.2em] uppercase text-gold/60">Prefer to reach out directly?</p>
-              <a href="mailto:hello@zazusafaris.co.ke" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
+              <a href="mailto:hello@zazusafaris.com" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
                 <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors">@</span>
-                hello@zazusafaris.co.ke
+                hello@zazusafaris.com
               </a>
               <a href="tel:+254700000000" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
                 <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors text-xs">☏</span>
