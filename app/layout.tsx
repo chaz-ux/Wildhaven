@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   },
   description: "East Africa's premier safari concierge. Bespoke journeys across Kenya & Tanzania — from private conservancies to social group adventures.",
   keywords: ['safari', 'Kenya', 'Tanzania', 'Maasai Mara', 'Serengeti', 'luxury safari', 'wildlife'],
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/favicon.png',
+  },
   openGraph: {
     title: "Zazu Safaris — Don't Just See the Wild. Feel It.",
     description: "Bespoke safari experiences across Kenya & Tanzania for every traveller.",
