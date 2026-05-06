@@ -76,7 +76,7 @@ export default function Footer() {
           <p className="text-[0.65rem] tracking-[0.22em] uppercase text-gold mb-5">Reach Us</p>
           <ul className="flex flex-col gap-3 text-sm text-ivory/45 font-light">
             <li className="hover:text-ivory transition-colors duration-300">
-              <a href="mailto:hello@wildhaven.co.ke">hello@wildhaven.co.ke</a>
+              <a href="mailto:hello@zazusafaris.co.ke">hello@zazusafaris.co.ke</a>
             </li>
             <li className="hover:text-ivory transition-colors duration-300">
               <a href="tel:+254700000000">+254 700 000 000</a>
