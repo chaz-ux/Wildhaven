@@ -275,16 +275,37 @@ Respond warmly and helpfully. Recommend 1-2 specific packages by name with reaso
               [&_em]:text-ivory/50 [&_em]:font-serif [&_em]:text-base [&_em]:not-italic
               [&_ul]:mt-3 [&_ul]:space-y-2 [&_li]:flex [&_li]:gap-2 [&_p]:mb-3"
               dangerouslySetInnerHTML={{ __html: result }} />
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/contact"
-                className="btn-shine text-center text-[0.75rem] tracking-[0.14em] uppercase font-medium bg-gold text-charcoal px-8 py-4 rounded-sm hover:bg-gold-light transition-colors">
-                Book This Safari →
-              </Link>
-              <button onClick={() => { setResult(null); setStep(0); setAnswers({ style: null, budget: 3500, animals: [], duration: null }); setName(''); setEmail('') }}
-                className="text-center text-[0.72rem] tracking-[0.12em] uppercase font-light border border-white/15 text-ivory/50 px-8 py-4 rounded-sm hover:border-gold hover:text-gold transition-colors">
-                Start Over
-              </button>
+            
+            {/* Action buttons */}
+            <div className="space-y-3 mb-6">
+              <p className="text-[0.65rem] tracking-[0.15em] uppercase text-ivory/40 mb-3">Next Steps</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Book */}
+                <Link href={`/contact?from=planner&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`}
+                  className="btn-shine text-center text-[0.75rem] tracking-[0.12em] uppercase font-medium bg-gold text-charcoal px-6 py-3 rounded-sm hover:bg-gold-light transition-colors">
+                  💳 Book Now
+                </Link>
+                
+                {/* Email Inquiry */}
+                <a href={`mailto:hello@zazusafaris.com?subject=Safari Inquiry from ${encodeURIComponent(name)}&body=Hi Zazu Safaris,%0A%0AI'm interested in booking a safari based on my Dream Board.%0A%0AName: ${encodeURIComponent(name)}%0AEmail: ${encodeURIComponent(email)}%0A%0APlease send me more details and pricing options.%0A%0AThank you!`}
+                  className="text-center text-[0.75rem] tracking-[0.12em] uppercase font-medium border border-gold text-gold px-6 py-3 rounded-sm hover:bg-gold/10 transition-colors">
+                  ✉️ Email Inquiry
+                </a>
+                
+                {/* WhatsApp */}
+                <a href={`https://wa.me/254141481665?text=Hi Zazu Safaris! I'm ${encodeURIComponent(name)} and I'm interested in booking a safari. My email is ${encodeURIComponent(email)}. Can you help me?`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="text-center text-[0.75rem] tracking-[0.12em] uppercase font-medium border border-green-400 text-green-400 px-6 py-3 rounded-sm hover:bg-green-400/10 transition-colors">
+                  💬 WhatsApp
+                </a>
+              </div>
             </div>
+            
+            {/* Reset */}
+            <button onClick={() => { setResult(null); setStep(0); setAnswers({ style: null, budget: 3500, animals: [], duration: null }); setName(''); setEmail('') }}
+              className="w-full text-center text-[0.72rem] tracking-[0.12em] uppercase font-light border border-white/15 text-ivory/50 px-8 py-3 rounded-sm hover:border-white/30 hover:text-ivory/70 transition-colors">
+              ← Start Over
+            </button>
           </div>
         )}
       </div>

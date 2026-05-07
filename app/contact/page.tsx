@@ -30,6 +30,9 @@ const GROUP_SIZES = [
 function ContactForm() {
   const searchParams = useSearchParams()
   const tourSlug = searchParams.get('tour')
+  const fromPlanner = searchParams.get('from') === 'planner'
+  const plannerName = searchParams.get('name')
+  const plannerEmail = searchParams.get('email')
 
   const [form, setForm] = useState({
     name: '', email: '', phone: '',
@@ -43,6 +46,18 @@ function ContactForm() {
   const [error,      setError]      = useState('')
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  // Pre-fill from planner
+  useEffect(() => {
+    if (fromPlanner && (plannerName || plannerEmail)) {
+      setForm(f => ({
+        ...f,
+        name: plannerName ? decodeURIComponent(plannerName) : f.name,
+        email: plannerEmail ? decodeURIComponent(plannerEmail) : f.email,
+        message: f.message || 'I loved my Dream Board suggestion and would like to proceed with booking.',
+      }))
+    }
+  }, [fromPlanner, plannerName, plannerEmail])
 
   const submit = async () => {
     if (!form.name || !form.email) { setError('Name and email are required.'); return }
