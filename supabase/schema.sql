@@ -1,5 +1,5 @@
 -- ============================================================
--- WILDHAVEN SAFARI ERP — Supabase PostgreSQL Schema
+-- ZAZU SAFARIS ERP — Supabase PostgreSQL Schema
 -- Paste this entire file into: Supabase Dashboard → SQL Editor → New Query
 -- ============================================================
 
@@ -364,7 +364,7 @@ INSERT INTO wildlife_sightings (animal, description, destination_id, spotted_at)
  (SELECT id FROM destinations WHERE slug = 'samburu'), NOW() - INTERVAL '15 minutes');
 
 -- ============================================================
--- DONE. Your Wildhaven database is ready.
+-- DONE. Your Zazu Safaris database is ready.
 -- Next steps:
 -- 1. Go to Supabase Dashboard → SQL Editor → New Query
 -- 2. Paste this entire file and click Run
