@@ -9,13 +9,13 @@ export default function SustainabilityPage() {
     <>
       <section className="pt-36 pb-24 px-6 bg-charcoal">
         <div className="max-w-[900px] mx-auto">
-          <Link href="/" className="text-[0.65rem] tracking-wide text-gold/60 hover:text-gold transition-colors mb-8 inline-block">← Back to Wildhaven</Link>
+          <Link href="/" className="text-[0.65rem] tracking-wide text-gold/60 hover:text-gold transition-colors mb-8 inline-block">← Back to Zazu Safaris</Link>
           <p className="text-[0.65rem] tracking-[0.3em] uppercase text-gold mb-4">Our Commitment</p>
           <h1 className="text-5xl text-ivory mb-6 leading-tight" style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}>
             The Wild Only Exists<br />If We Protect It
           </h1>
           <p className="text-base text-ivory/45 leading-relaxed font-light max-w-2xl mb-20">
-            Tourism is only worth something if the ecosystem it depends on survives. Every decision Wildhaven makes — which camps we work with, which routes we drive, which communities we partner — is filtered through one question: does this help the wild endure?
+            Tourism is only worth something if the ecosystem it depends on survives. Every decision Zazu Safaris makes — which camps we work with, which routes we drive, which communities we partner — is filtered through one question: does this help the wild endure?
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20">
@@ -38,7 +38,7 @@ export default function SustainabilityPage() {
             <p className="text-sm text-ivory/30 font-light italic mb-6" style={{ fontFamily: 'var(--font-cormorant)', fontSize: '1.2rem' }}>
               &ldquo;We are not custodians of the wild. We are guests. And guests leave things better than they found them.&rdquo;
             </p>
-            <p className="text-[0.65rem] tracking-widest uppercase text-ivory/20">— Wildhaven Founder</p>
+            <p className="text-[0.65rem] tracking-widest uppercase text-ivory/20">— Zazu Safaris Founder</p>
           </div>
         </div>
       </section>

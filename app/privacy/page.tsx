@@ -15,7 +15,7 @@ export default function PrivacyPage() {
   return (
     <section className="pt-36 pb-24 px-6 bg-charcoal min-h-screen">
       <div className="max-w-[800px] mx-auto">
-        <Link href="/" className="text-[0.65rem] tracking-wide text-gold/60 hover:text-gold transition-colors mb-8 inline-block">← Back to Wildhaven</Link>
+        <Link href="/" className="text-[0.65rem] tracking-wide text-gold/60 hover:text-gold transition-colors mb-8 inline-block">← Back to Zazu Safaris</Link>
         <h1 className="text-5xl text-ivory mb-3" style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}>Privacy Policy</h1>
         <p className="text-sm text-ivory/35 mb-16 font-light">Last updated: January 2025</p>
         <div className="space-y-12">
