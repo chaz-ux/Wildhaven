@@ -173,12 +173,13 @@ Max 320 words. No markdown. Sound human and warm, not like a brochure.`
   }
 
   // Direct book from AI result — passes all known info to contact form
-  const bookNow = () => {
+  const bookNow = (packageSlug?: string) => {
     const params = new URLSearchParams({
-      from:        'planner',
-      name:        name,
-      email:       email,
-      travellers:  answers.group,
+      from:       'planner',
+      name:       name,
+      email:      email,
+      travellers: answers.group,
+      ...(packageSlug ? { package: packageSlug } : {}),
     })
     router.push(`/contact?${params.toString()}`)
   }
@@ -348,12 +349,35 @@ Max 320 words. No markdown. Sound human and warm, not like a brochure.`
               dangerouslySetInnerHTML={{ __html: result }}
             />
 
+            {/* Package options */}
+            <div className="space-y-2 mb-8">
+              <p className="text-[0.62rem] tracking-[0.2em] uppercase text-ivory/30 mb-3">Quick Book a Package</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  { slug: 'mara-luxury-ashnil' as const,     label: '4-Day Mara Luxury',    price: '$2,744/pp' },
+                  { slug: 'family-circuit-sopa' as const,    label: '7-Day Family Safari',  price: '$2,672/pp' },
+                  { slug: 'mara-nakuru-hells-gate' as const, label: '5-Day Mara & Nakuru',  price: '$1,568/pp' },
+                  { slug: 'rift-valley-naivasha' as const,   label: '5-Day Rift Valley',    price: '$1,420/pp' },
+                  { slug: 'kenya-classic-circuit' as const,  label: '7-Day Kenya Classic',  price: '$2,190/pp' },
+                  { slug: 'mombasa-beach-safari' as const,   label: '8-Day to Mombasa',     price: '$2,480/pp' },
+                  { slug: 'taita-salt-lick' as const,        label: '5-Day Taita & Coast',  price: '$1,680/pp' },
+                  { slug: 'ol-pejeta-laikipia' as const,     label: '4-Day Ol Pejeta',      price: '$3,200/pp' },
+                ].map((pkg) => (
+                  <button key={pkg.slug} onClick={() => bookNow(pkg.slug)}
+                    className="flex items-center justify-between px-3 py-2 border border-white/10 rounded-sm hover:border-gold/40 hover:bg-gold/5 transition-all group text-xs">
+                    <span className="text-ivory/70 group-hover:text-ivory transition-colors">{pkg.label}</span>
+                    <span className="text-[0.65rem] text-gold/60 group-hover:text-gold transition-colors">{pkg.price}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Action row */}
             <div className="space-y-3">
               <p className="text-[0.65rem] tracking-[0.2em] uppercase text-ivory/30">Ready to book?</p>
 
               {/* Primary: Book directly - pre-fills form */}
-              <button onClick={bookNow}
+              <button onClick={() => bookNow()}
                 className="btn-shine w-full text-center text-[0.78rem] tracking-[0.14em] uppercase font-medium bg-gold text-charcoal py-4 rounded-sm hover:bg-gold-light transition-colors">
                 Book This Safari — Your Details Are Pre-Filled →
               </button>

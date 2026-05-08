@@ -17,17 +17,19 @@ export default function TourCard({ tour, priority = false }: TourCardProps) {
   const badgeClass = getTierBadgeStyle(tierSlug)
 
   return (
-    <Link href={`/safaris/${tour.slug}`} className="tour-card block group rounded-sm overflow-hidden bg-charcoal-mid border border-white/6">
-      {/* Image */}
-      <div className="relative h-56 overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt={tour.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="tour-image-inner"
-          priority={priority}
-        />
+    <div className="tour-card block group rounded-sm overflow-hidden bg-charcoal-mid border border-white/6">
+      {/* Main card links to detail page */}
+      <Link href={`/safaris/${tour.slug}`} className="block">
+        {/* Image */}
+        <div className="relative h-56 overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={tour.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="tour-image-inner"
+            priority={priority}
+          />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal-mid/80 via-transparent to-transparent" />
 
@@ -95,13 +97,21 @@ export default function TourCard({ tour, priority = false }: TourCardProps) {
               <span className="text-xs text-ivory/25 font-sans"> /pp</span>
             </p>
           </div>
-          <div className="w-8 h-8 rounded-full border border-gold/25 flex items-center justify-center text-gold group-hover:bg-gold group-hover:border-gold transition-all duration-300">
-            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 group-hover:text-charcoal transition-colors duration-300" fill="none" stroke="currentColor" strokeWidth={1.5}>
+        </div>
+      </Link>
+
+      {/* Book button - separate from detail link */}
+      <div className="px-5 pb-5">
+        <Link 
+          href={`/contact?package=${tour.slug}`}
+          onClick={e => e.stopPropagation()}
+          className="flex justify-end">
+          <div className="w-8 h-8 rounded-full border border-gold/25 flex items-center justify-center text-gold hover:bg-gold hover:border-gold transition-all duration-300">
+            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 hover:text-charcoal transition-colors duration-300" fill="none" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8h10M9 4l4 4-4 4" />
             </svg>
           </div>
-        </div>
+        </Link>
       </div>
-    </Link>
-  )
+    </div>
 }
