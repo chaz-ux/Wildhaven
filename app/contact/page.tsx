@@ -287,13 +287,29 @@ function ContactForm() {
 
           <div>
             <label className={labelCls}>WhatsApp / Phone</label>
-            <div className="flex gap-2">
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ivory/50 text-sm font-medium pointer-events-none">
+                {form.phone.split(' ')[0] || '+254'}
+              </span>
+              <input type="tel" placeholder="700 000 000" 
+                value={form.phone.split(' ').slice(1).join(' ')}
+                onChange={e => {
+                  const countryCode = form.phone.split(' ')[0] || '+254'
+                  set('phone', `${countryCode} ${e.target.value}`.trim())
+                }}
+                onFocus={() => {
+                  // Show country code selector on focus if no code set
+                  if (!form.phone) set('phone', '+254 ')
+                }}
+                className={cn(inputCls, 'pl-16')}
+              />
+              {/* Hidden country code selector - accessible via click */}
               <select value={form.phone.split(' ')[0] || '+254'}
                 onChange={e => {
                   const currentNumber = form.phone.split(' ').slice(1).join(' ') || ''
                   set('phone', `${e.target.value} ${currentNumber}`.trim())
                 }}
-                className={cn(inputCls, 'w-[120px] flex-shrink-0')}>
+                className="absolute inset-0 opacity-0 cursor-pointer w-16">
                 <option value="+254">🇰🇪 +254</option>
                 <option value="+255">🇹🇿 +255</option>
                 <option value="+256">🇺🇬 +256</option>
@@ -307,15 +323,8 @@ function ContactForm() {
                 <option value="+34">🇪🇸 +34</option>
                 <option value="+91">🇮🇳 +91</option>
               </select>
-              <input type="tel" placeholder="700 000 000" 
-                value={form.phone.split(' ').slice(1).join(' ')}
-                onChange={e => {
-                  const countryCode = form.phone.split(' ')[0] || '+254'
-                  set('phone', `${countryCode} ${e.target.value}`.trim())
-                }}
-                className={cn(inputCls, 'flex-1')} />
+              <p className="text-[0.62rem] text-ivory/25 mt-1.5">Click code to change country. We'll send confirmation here.</p>
             </div>
-            <p className="text-[0.62rem] text-ivory/25 mt-1.5">We'll send your booking confirmation here too.</p>
           </div>
 
           <div>
