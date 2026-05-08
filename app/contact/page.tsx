@@ -1,45 +1,75 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Suspense } from 'react'
 
-const TIERS = [
-  { value: 'sovereign', label: 'The Sovereign — Luxury (from $8,500)' },
-  { value: 'horizon',   label: 'The Horizon — Mid-Range (from $2,400)' },
-  { value: 'tribe',     label: 'The Tribe — Group/Budget (from $950)' },
+// ─── Real packages matching Savanna Sojourns ────────────────────────────────
+const PACKAGES = [
+  { value: 'mara-luxury-ashnil',    label: '4-Day Maasai Mara Luxury Safari',          price: '$2,744/pp', badge: 'Luxury' },
+  { value: 'family-circuit-sopa',   label: '7-Day Family Safari at Sopa Lodges',        price: '$2,672/pp', badge: 'Family' },
+  { value: 'mara-nakuru-hells-gate',label: '5-Day Mara, Nakuru & Hell\'s Gate',         price: '$1,568/pp', badge: 'Popular' },
+  { value: 'rift-valley-naivasha',  label: '5-Day Through the Rift Valley',             price: '$1,420/pp', badge: '' },
+  { value: 'kenya-classic-circuit', label: '7-Day Kenya Classic Safari',                price: '$2,190/pp', badge: '' },
+  { value: 'mombasa-beach-safari',  label: '8-Day Kenya Odyssey to Mombasa',            price: '$2,480/pp', badge: '' },
+  { value: 'taita-salt-lick',       label: '5-Day Taita Hills & Salt Lick via Mombasa', price: '$1,680/pp', badge: '' },
+  { value: 'ol-pejeta-laikipia',    label: '4-Day Ol Pejeta Conservancy',               price: '$3,200/pp', badge: 'Exclusive' },
+  { value: 'custom',                label: 'Custom / Not sure yet',                     price: 'TBD',       badge: '' },
 ]
 
-const BUDGETS = [
-  { value: '<2000',       label: 'Under $2,000' },
-  { value: '2000-5000',   label: '$2,000 – $5,000' },
-  { value: '5000-10000',  label: '$5,000 – $10,000' },
-  { value: '10000+',      label: '$10,000+' },
+const GROUP_OPTIONS = [
+  { value: '1',   label: 'Solo',         icon: '🧍', desc: '1 traveller' },
+  { value: '2',   label: 'Couple',       icon: '👫', desc: '2 travellers' },
+  { value: '3-5', label: 'Small Group',  icon: '👨‍👩‍👧', desc: '3–5 travellers' },
+  { value: '6+',  label: 'Large Group',  icon: '👥', desc: '6 or more' },
 ]
 
-const GROUP_SIZES = [
-  { value: '1', label: 'Solo traveller' },
-  { value: '2', label: 'Couple (2)' },
-  { value: '3-5', label: 'Small group (3–5)' },
-  { value: '6-12', label: 'Group (6–12)' },
-  { value: '13+', label: 'Large group (13+)' },
+// Payment intent options
+const PAYMENT_OPTIONS = [
+  {
+    value: 'booking_fee',
+    label: 'Pay Booking Fee Now',
+    desc: '$150 to secure your slot — deducted from total',
+    badge: 'Recommended',
+  },
+  {
+    value: 'deposit',
+    label: 'Pay 30% Deposit',
+    desc: 'Confirms booking, balance due 60 days before travel',
+    badge: '',
+  },
+  {
+    value: 'full',
+    label: 'Pay in Full',
+    desc: 'Pay 100% now and get 3% discount on total',
+    badge: 'Best Value',
+  },
+  {
+    value: 'enquire',
+    label: 'Enquire First',
+    desc: 'No payment now — talk to us before committing',
+    badge: '',
+  },
 ]
 
 function ContactForm() {
   const searchParams = useSearchParams()
-  const tourSlug = searchParams.get('tour')
-  const fromPlanner = searchParams.get('from') === 'planner'
-  const plannerName = searchParams.get('name')
-  const plannerEmail = searchParams.get('email')
+  const fromPlanner  = searchParams.get('from') === 'planner'
+  const prefPackage  = searchParams.get('package') || ''
+  const prefTravellers = searchParams.get('travellers') || ''
 
+  const [step, setStep] = useState(1) // 3-step form
   const [form, setForm] = useState({
-    name: '', email: '', phone: '',
-    preferred_tier: '', target_budget: '',
-    travel_dates: '', group_size: '',
+    name: '',
+    email: '',
+    phone: '',
+    package_slug: prefPackage,
+    group_size: prefTravellers,
+    travel_start: '',
+    travel_end: '',
+    payment_intent: 'enquire',
     message: '',
-    tour_id: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [success,    setSuccess]    = useState(false)
@@ -47,31 +77,37 @@ function ContactForm() {
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
-  // Pre-fill from planner
+  // Pre-fill from planner redirect
   useEffect(() => {
-    if (fromPlanner && (plannerName || plannerEmail)) {
+    const n = searchParams.get('name')
+    const e = searchParams.get('email')
+    if (n || e) {
       setForm(f => ({
         ...f,
-        name: plannerName ? decodeURIComponent(plannerName) : f.name,
-        email: plannerEmail ? decodeURIComponent(plannerEmail) : f.email,
-        message: f.message || 'I loved my Dream Board suggestion and would like to proceed with booking.',
+        name:    n ? decodeURIComponent(n) : f.name,
+        email:   e ? decodeURIComponent(e) : f.email,
+        message: fromPlanner ? 'I reviewed my AI safari suggestion and would like to proceed.' : f.message,
       }))
     }
-  }, [fromPlanner, plannerName, plannerEmail])
+  }, [fromPlanner, searchParams])
 
   const submit = async () => {
     if (!form.name || !form.email) { setError('Name and email are required.'); return }
-    setSubmitting(true)
-    setError('')
+    setSubmitting(true); setError('')
     try {
-      const res = await fetch('/api/inquiry', {
+      const res  = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          travel_dates: form.travel_start && form.travel_end
+            ? `${form.travel_start} to ${form.travel_end}`
+            : form.travel_start || '',
+        }),
       })
       const data = await res.json()
       if (data.success) setSuccess(true)
-      else setError(data.error || 'Something went wrong. Please try again.')
+      else setError(data.error || 'Something went wrong.')
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -79,183 +115,361 @@ function ContactForm() {
     }
   }
 
-  const inputClass = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/40 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 focus:bg-white/8 transition-colors duration-300"
-  const selectClass = "w-full bg-white/5 border border-white/20 text-ivory rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 focus:bg-white/8 transition-colors duration-300"
-  const labelClass  = "block text-[0.62rem] tracking-[0.18em] uppercase text-ivory/30 mb-2"
+  const inputCls = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/40 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors [color-scheme:dark]"
+  const labelCls = "block text-[0.62rem] tracking-[0.18em] uppercase text-ivory/40 mb-2"
+
+  const selectedPackage = PACKAGES.find(p => p.value === form.package_slug)
+
+  if (success) return (
+    <div className="text-center py-16">
+      <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto mb-6">
+        <span className="text-gold text-2xl">✦</span>
+      </div>
+      <h3 className="text-3xl text-ivory mb-3" style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}>
+        Safari Brief Received
+      </h3>
+      <p className="text-sm text-ivory/40 max-w-sm mx-auto leading-relaxed font-light mb-2">
+        We've sent a confirmation to <span className="text-ivory/70">{form.email}</span>.
+      </p>
+      <p className="text-sm text-ivory/40 max-w-sm mx-auto leading-relaxed font-light">
+        Our team will reach out within 2 hours via email{form.phone ? ' and WhatsApp' : ''} with your personalised proposal.
+      </p>
+      {form.payment_intent !== 'enquire' && (
+        <div className="mt-8 p-4 border border-gold/20 rounded-sm max-w-sm mx-auto">
+          <p className="text-xs text-gold/70 mb-1 uppercase tracking-widest">Payment</p>
+          <p className="text-sm text-ivory/60 font-light">
+            Our team will send you a secure Pesapal payment link for your{' '}
+            <strong className="text-ivory">
+              {form.payment_intent === 'booking_fee' ? '$150 booking fee' :
+               form.payment_intent === 'deposit'     ? '30% deposit'      : 'full payment'}
+            </strong>{' '}
+            via M-Pesa or card.
+          </p>
+        </div>
+      )}
+      <Link href="/safaris" className="inline-block mt-8 text-[0.72rem] tracking-[0.12em] uppercase text-gold hover:text-gold-light transition-colors">
+        Browse more safaris →
+      </Link>
+    </div>
+  )
 
   return (
-    <>
-      <style>{`
-        select option {
-          background-color: #1a1a1a;
-          color: #fffbf7;
-          padding: 8px;
-        }
-        select option:checked {
-          background: linear-gradient(#ffc41a, #ffc41a);
-          background-color: #ffc41a !important;
-          color: #1a1a1a;
-        }
-      `}</style>
-      <div>
-      {!success ? (
-        <div className="space-y-5">
-          {/* Name + Email */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className={labelClass}>Full Name *</label>
-              <input type="text" placeholder="Your name" value={form.name} onChange={e => set('name', e.target.value)} className={inputClass} />
+    <div>
+      {/* Step indicator */}
+      <div className="flex items-center gap-2 mb-8">
+        {['Choose Safari', 'Your Details', 'Confirm'].map((s, i) => (
+          <div key={s} className="flex items-center gap-2">
+            <div className={cn(
+              'flex items-center gap-2 text-[0.65rem] tracking-wide uppercase transition-colors',
+              step === i + 1 ? 'text-gold' : step > i + 1 ? 'text-ivory/40' : 'text-ivory/20'
+            )}>
+              <span className={cn(
+                'w-5 h-5 rounded-full border flex items-center justify-center text-[0.6rem] flex-shrink-0',
+                step === i + 1 ? 'border-gold text-gold' :
+                step > i + 1  ? 'border-ivory/30 bg-ivory/10 text-ivory/50' :
+                                 'border-white/15 text-ivory/20'
+              )}>
+                {step > i + 1 ? '✓' : i + 1}
+              </span>
+              <span className="hidden sm:inline">{s}</span>
             </div>
-            <div>
-              <label className={labelClass}>Email *</label>
-              <input type="email" placeholder="your@email.com" value={form.email} onChange={e => set('email', e.target.value)} className={inputClass} />
-            </div>
+            {i < 2 && <div className={cn('flex-1 h-px min-w-[20px]', step > i + 1 ? 'bg-ivory/20' : 'bg-white/8')} />}
           </div>
+        ))}
+      </div>
 
-          {/* Phone + Dates */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className={labelClass}>WhatsApp / Phone</label>
-              <input type="tel" placeholder="+254 700 000 000" value={form.phone} onChange={e => set('phone', e.target.value)} className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Preferred Travel Dates</label>
-              <input type="text" placeholder="e.g. July–August 2025" value={form.travel_dates} onChange={e => set('travel_dates', e.target.value)} className={inputClass} />
-            </div>
-          </div>
-
-          {/* Tier + Budget */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className={labelClass}>Preferred Tier</label>
-              <div className="space-y-2">
-                {TIERS.map(t => (
-                  <label key={t.value} className="flex items-start gap-3 p-3 border border-white/10 rounded-sm cursor-pointer hover:bg-white/3 transition-colors duration-200" style={{ background: form.preferred_tier === t.value ? 'rgba(255, 184, 28, 0.05)' : 'transparent' }}>
-                    <input
-                      type="radio"
-                      name="tier"
-                      value={t.value}
-                      checked={form.preferred_tier === t.value}
-                      onChange={e => set('preferred_tier', e.target.value)}
-                      className="mt-1 flex-shrink-0 w-4 h-4"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm text-ivory font-light">{t.label}</p>
-                      <p className="text-[0.65rem] text-ivory/40 mt-0.5">
-                        {t.value === 'sovereign' && 'Private luxury, max 2 guests per vehicle, butler service'}
-                        {t.value === 'horizon' && 'Authentic comfort, up to 6 guests, expert guides'}
-                        {t.value === 'tribe' && 'Social adventure, shared vehicles, community vibes'}
-                      </p>
+      {/* ── STEP 1: Choose Safari & Group ─────────────────── */}
+      {step === 1 && (
+        <div className="space-y-6">
+          {/* Package */}
+          <div>
+            <label className={labelCls}>Which Safari Package?</label>
+            <div className="space-y-2">
+              {PACKAGES.map(pkg => (
+                <label key={pkg.value}
+                  className={cn(
+                    'flex items-center gap-4 p-3 border rounded-sm cursor-pointer transition-all duration-200',
+                    form.package_slug === pkg.value
+                      ? 'border-gold bg-gold/6'
+                      : 'border-white/10 hover:border-white/25'
+                  )}>
+                  <input type="radio" name="package" value={pkg.value}
+                    checked={form.package_slug === pkg.value}
+                    onChange={e => set('package_slug', e.target.value)}
+                    className="flex-shrink-0 accent-[#D4820A]" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm text-ivory font-light">{pkg.label}</p>
+                      {pkg.badge && (
+                        <span className="text-[0.55rem] tracking-widest uppercase border border-gold/30 text-gold/70 px-1.5 py-0.5 rounded-sm">
+                          {pkg.badge}
+                        </span>
+                      )}
                     </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className={labelClass}>Budget per Person</label>
-              <select value={form.target_budget} onChange={e => set('target_budget', e.target.value)} className={selectClass}>
-                <option value="">Select range…</option>
-                {BUDGETS.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
-              </select>
+                    {pkg.value !== 'custom' && (
+                      <p className="text-xs text-gold/60 mt-0.5">{pkg.price}</p>
+                    )}
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
 
           {/* Group size */}
           <div>
-            <label className={labelClass}>Group Size</label>
-            <select value={form.group_size} onChange={e => set('group_size', e.target.value)} className={selectClass}>
-              <option value="">How many travellers?</option>
-              {GROUP_SIZES.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
-            </select>
+            <label className={labelCls}>How Many Are Travelling?</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {GROUP_OPTIONS.map(g => (
+                <button key={g.value}
+                  onClick={() => set('group_size', g.value)}
+                  className={cn(
+                    'p-3 border rounded-sm text-center transition-all duration-200',
+                    form.group_size === g.value
+                      ? 'border-gold bg-gold/8'
+                      : 'border-white/10 hover:border-gold/30'
+                  )}>
+                  <span className="text-xl block mb-1">{g.icon}</span>
+                  <p className="text-xs text-ivory font-medium">{g.label}</p>
+                  <p className="text-[0.6rem] text-ivory/35">{g.desc}</p>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Message */}
+          {/* Travel dates */}
           <div>
-            <label className={labelClass}>Message / Dream Safari Details</label>
-            <textarea
-              rows={4}
-              placeholder="Tell us about your dream safari — specific animals, destinations, special occasions, accessibility needs…"
-              value={form.message}
-              onChange={e => set('message', e.target.value)}
-              className={cn(inputClass, 'resize-none')}
-            />
+            <label className={labelCls}>Preferred Travel Dates</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[0.6rem] text-ivory/30 mb-1.5">Departure Date</p>
+                <input type="date" value={form.travel_start}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={e => set('travel_start', e.target.value)}
+                  className={inputCls} />
+              </div>
+              <div>
+                <p className="text-[0.6rem] text-ivory/30 mb-1.5">Return Date</p>
+                <input type="date" value={form.travel_end}
+                  min={form.travel_start || new Date().toISOString().split('T')[0]}
+                  onChange={e => set('travel_end', e.target.value)}
+                  className={inputCls} />
+              </div>
+            </div>
+            <p className="text-[0.62rem] text-ivory/25 mt-1.5">Not sure yet? Leave blank — we'll work around your schedule.</p>
+          </div>
+
+          <button onClick={() => setStep(2)}
+            disabled={!form.package_slug}
+            className={cn(
+              'btn-shine w-full text-[0.78rem] tracking-[0.14em] uppercase font-medium py-4 rounded-sm transition-all',
+              form.package_slug ? 'bg-gold text-charcoal hover:bg-gold-light' : 'bg-white/10 text-ivory/30 cursor-not-allowed'
+            )}>
+            Continue → Your Details
+          </button>
+        </div>
+      )}
+
+      {/* ── STEP 2: Contact Details ────────────────────────── */}
+      {step === 2 && (
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className={labelCls}>Full Name *</label>
+              <input type="text" placeholder="Your name" value={form.name}
+                onChange={e => set('name', e.target.value)} className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>Email Address *</label>
+              <input type="email" placeholder="your@email.com" value={form.email}
+                onChange={e => set('email', e.target.value)} className={inputCls} />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>WhatsApp / Phone</label>
+            <div className="flex gap-2">
+              <select value={form.phone.split(' ')[0] || '+254'}
+                onChange={e => {
+                  const currentNumber = form.phone.split(' ').slice(1).join(' ') || ''
+                  set('phone', `${e.target.value} ${currentNumber}`.trim())
+                }}
+                className={cn(inputCls, 'w-[120px] flex-shrink-0')}>
+                <option value="+254">🇰🇪 +254</option>
+                <option value="+255">🇹🇿 +255</option>
+                <option value="+256">🇺🇬 +256</option>
+                <option value="+27">🇿🇦 +27</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+33">🇫🇷 +33</option>
+                <option value="+49">🇩🇪 +49</option>
+                <option value="+39">🇮🇹 +39</option>
+                <option value="+34">🇪🇸 +34</option>
+                <option value="+91">🇮🇳 +91</option>
+              </select>
+              <input type="tel" placeholder="700 000 000" 
+                value={form.phone.split(' ').slice(1).join(' ')}
+                onChange={e => {
+                  const countryCode = form.phone.split(' ')[0] || '+254'
+                  set('phone', `${countryCode} ${e.target.value}`.trim())
+                }}
+                className={cn(inputCls, 'flex-1')} />
+            </div>
+            <p className="text-[0.62rem] text-ivory/25 mt-1.5">We'll send your booking confirmation here too.</p>
+          </div>
+
+          <div>
+            <label className={labelCls}>Anything Specific? (Optional)</label>
+            <textarea rows={3} placeholder="Special occasions, dietary needs, accessibility, specific animals you want to see…"
+              value={form.message} onChange={e => set('message', e.target.value)}
+              className={cn(inputCls, 'resize-none')} />
           </div>
 
           {error && <p className="text-red-400/80 text-sm">{error}</p>}
 
-          <button
-            onClick={submit}
-            disabled={submitting}
-            className={cn(
-              'btn-shine w-full text-[0.78rem] tracking-[0.14em] uppercase font-medium py-4 rounded-sm transition-all duration-300',
-              submitting ? 'bg-gold/50 text-charcoal/50 cursor-not-allowed' : 'bg-gold text-charcoal hover:bg-gold-light'
-            )}
-          >
-            {submitting ? 'Sending…' : 'Send My Safari Enquiry →'}
-          </button>
-
-          <p className="text-[0.68rem] text-ivory/20 text-center">
-            We respond within 2 hours. No spam, ever. Your data is never sold.
-          </p>
-        </div>
-      ) : (
-        /* Success */
-        <div className="text-center py-12">
-          <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto mb-6">
-            <span className="text-gold text-2xl">✦</span>
+          <div className="flex gap-3">
+            <button onClick={() => setStep(1)}
+              className="text-[0.72rem] tracking-wide uppercase text-ivory/40 border border-white/12 px-5 py-3 rounded-sm hover:border-white/25 hover:text-ivory/60 transition-all">
+              ← Back
+            </button>
+            <button onClick={() => { if (!form.name || !form.email) { setError('Name and email are required.'); return }; setError(''); setStep(3) }}
+              className="btn-shine flex-1 text-[0.78rem] tracking-[0.14em] uppercase font-medium bg-gold text-charcoal py-3 rounded-sm hover:bg-gold-light transition-all">
+              Continue → Confirm
+            </button>
           </div>
-          <h3
-            className="text-3xl text-ivory mb-3"
-            style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}
-          >
-            Safari Brief Received
-          </h3>
-          <p className="text-sm text-ivory/40 max-w-sm mx-auto leading-relaxed font-light">
-            Our concierge team will reach out to <span className="text-ivory/70">{form.email}</span> within 2 hours with a personalised proposal.
+        </div>
+      )}
+
+      {/* ── STEP 3: Confirm & Payment Intent ──────────────── */}
+      {step === 3 && (
+        <div className="space-y-6">
+          {/* Summary */}
+          <div className="border border-white/10 rounded-sm p-5 space-y-3">
+            <p className="text-[0.62rem] tracking-[0.2em] uppercase text-gold/60">Booking Summary</p>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-ivory/40">Package</span>
+                <span className="text-ivory text-right max-w-[60%]">{selectedPackage?.label || 'Custom'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-ivory/40">Price</span>
+                <span className="text-gold">{selectedPackage?.price || 'TBD'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-ivory/40">Group</span>
+                <span className="text-ivory">{GROUP_OPTIONS.find(g => g.value === form.group_size)?.label || '—'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-ivory/40">Dates</span>
+                <span className="text-ivory">
+                  {form.travel_start && form.travel_end
+                    ? `${form.travel_start} → ${form.travel_end}`
+                    : form.travel_start || 'Flexible'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-ivory/40">Name</span>
+                <span className="text-ivory">{form.name}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment intent */}
+          <div>
+            <label className={labelCls}>How Would You Like to Proceed?</label>
+            <div className="space-y-2">
+              {PAYMENT_OPTIONS.map(opt => (
+                <label key={opt.value}
+                  className={cn(
+                    'flex items-start gap-4 p-4 border rounded-sm cursor-pointer transition-all duration-200',
+                    form.payment_intent === opt.value
+                      ? 'border-gold bg-gold/6'
+                      : 'border-white/10 hover:border-white/25'
+                  )}>
+                  <input type="radio" name="payment" value={opt.value}
+                    checked={form.payment_intent === opt.value}
+                    onChange={e => set('payment_intent', e.target.value)}
+                    className="mt-0.5 flex-shrink-0 accent-[#D4820A]" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm text-ivory font-medium">{opt.label}</p>
+                      {opt.badge && (
+                        <span className="text-[0.55rem] tracking-widest uppercase border border-gold/30 text-gold/70 px-1.5 py-0.5 rounded-sm">
+                          {opt.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-ivory/40 mt-0.5">{opt.desc}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+            {form.payment_intent !== 'enquire' && (
+              <div className="mt-3 p-3 bg-gold/5 border border-gold/15 rounded-sm">
+                <p className="text-xs text-ivory/50 leading-relaxed">
+                  <span className="text-gold">Accepted:</span> M-Pesa, Visa, Mastercard via Pesapal.
+                  A secure payment link will be sent to <span className="text-ivory/70">{form.email}</span> within 2 hours of your submission.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {error && <p className="text-red-400/80 text-sm">{error}</p>}
+
+          <div className="flex gap-3">
+            <button onClick={() => setStep(2)}
+              className="text-[0.72rem] tracking-wide uppercase text-ivory/40 border border-white/12 px-5 py-4 rounded-sm hover:border-white/25 hover:text-ivory/60 transition-all">
+              ← Back
+            </button>
+            <button onClick={submit} disabled={submitting}
+              className={cn(
+                'btn-shine flex-1 text-[0.78rem] tracking-[0.14em] uppercase font-medium py-4 rounded-sm transition-all',
+                submitting ? 'bg-gold/50 text-charcoal/50 cursor-not-allowed' : 'bg-gold text-charcoal hover:bg-gold-light'
+              )}>
+              {submitting ? 'Sending…' :
+               form.payment_intent === 'enquire' ? 'Send Enquiry →' : 'Submit & Await Payment Link →'}
+            </button>
+          </div>
+
+          <p className="text-[0.65rem] text-ivory/20 text-center">
+            We respond within 2 hours · No spam · Your data is never sold
           </p>
-          <Link href="/safaris" className="inline-block mt-8 text-[0.72rem] tracking-[0.12em] uppercase text-gold hover:text-gold-light transition-colors">
-            Browse more safaris →
-          </Link>
         </div>
       )}
     </div>
-    </>
   )
 }
 
 export default function ContactPage() {
   return (
     <>
-      {/* Hero */}
       <section className="pt-36 pb-16 px-6 bg-charcoal">
         <div className="max-w-[1400px] mx-auto">
-          <p className="text-[0.65rem] tracking-[0.3em] uppercase text-gold mb-4">Start Planning</p>
-          <h1
-            className="text-display-lg text-ivory mb-4 leading-tight"
-            style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}
-          >
-            Let&apos;s Build<br />Your Safari.
+          <p className="text-[0.65rem] tracking-[0.3em] uppercase text-gold mb-4">Book Your Safari</p>
+          <h1 className="text-display-lg text-ivory mb-4 leading-tight"
+            style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}>
+            Let&apos;s Make It<br />Happen.
           </h1>
           <p className="text-sm text-ivory/40 max-w-md font-light leading-relaxed">
-            No templates. No packages pulled off a shelf. Every enquiry is answered personally by one of our senior safari specialists.
+            Three steps. Two minutes. One unforgettable safari — confirmed and waiting for you.
           </p>
         </div>
       </section>
 
-      {/* Main grid */}
       <section className="py-16 px-6 bg-charcoal">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
-          {/* Left: Perks */}
-          <div>
-            <div className="space-y-8 mb-12">
+
+          {/* Left: Why book with us */}
+          <div className="space-y-10">
+            <div className="space-y-6">
               {[
-                { icon: '✦', title: 'Free Custom Itinerary', desc: 'We design a bespoke route based on your dates, budget, and wish list. Zero obligation.' },
-                { icon: '✦', title: 'Flexible Payment', desc: '30% deposit to secure. Balance due 60 days before departure. ABTA protected.' },
-                { icon: '✦', title: 'Price Match Promise', desc: 'Found the same safari cheaper anywhere? We match it, plus add a complimentary Bush Dinner.' },
-                { icon: '✦', title: 'Expert Concierge', desc: "Your specialist has personally visited every camp we recommend. Ask anything — they've slept there." },
+                { icon: '🔒', title: 'Secure & Transparent', desc: 'Pay via M-Pesa or card through Pesapal — Kenya\'s most trusted payment gateway. No hidden charges, ever.' },
+                { icon: '✦',  title: 'Free Custom Itinerary', desc: 'Every booking includes a personalised day-by-day itinerary built around your group and interests.' },
+                { icon: '📅', title: 'Flexible Dates', desc: 'Can\'t commit to exact dates? Enquire now, lock in dates later. We hold your slot for 48 hours.' },
+                { icon: '💬', title: 'Human Support', desc: 'Real people, real answers. We reply on WhatsApp and email — usually within the hour.' },
               ].map(p => (
                 <div key={p.title} className="flex gap-4">
-                  <span className="text-gold mt-1 flex-shrink-0 text-sm">{p.icon}</span>
+                  <span className="text-lg flex-shrink-0 mt-0.5">{p.icon}</span>
                   <div>
                     <p className="text-sm text-ivory font-medium mb-1">{p.title}</p>
                     <p className="text-sm text-ivory/40 leading-relaxed font-light">{p.desc}</p>
@@ -264,16 +478,19 @@ export default function ContactPage() {
               ))}
             </div>
 
-            {/* Direct contacts */}
+            {/* Direct contact */}
             <div className="glass p-6 rounded-sm space-y-4">
-              <p className="text-[0.62rem] tracking-[0.2em] uppercase text-gold/60">Prefer to reach out directly?</p>
-              <a href="mailto:hello@zazusafaris.com" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
-                <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors">@</span>
+              <p className="text-[0.62rem] tracking-[0.2em] uppercase text-gold/60">Reach Us Directly</p>
+              <a href="mailto:hello@zazusafaris.com"
+                className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
+                <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors text-xs">@</span>
                 hello@zazusafaris.com
               </a>
-              <a href="tel:+254141481665" className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
-                <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors text-xs">☏</span>
-                +254 141 481 665
+              <a href="https://wa.me/254141481665"
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 text-sm text-ivory/60 hover:text-green-400 transition-colors group">
+                <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-green-400/30 transition-colors text-xs">💬</span>
+                WhatsApp: +254 141 481 665
               </a>
               <p className="text-[0.68rem] text-ivory/20">Mon–Sun · 7am–8pm East Africa Time</p>
             </div>
@@ -281,7 +498,7 @@ export default function ContactPage() {
 
           {/* Right: Form */}
           <div>
-            <Suspense fallback={<div className="text-ivory/30 text-sm">Loading form…</div>}>
+            <Suspense fallback={<div className="text-ivory/30 text-sm">Loading…</div>}>
               <ContactForm />
             </Suspense>
           </div>
