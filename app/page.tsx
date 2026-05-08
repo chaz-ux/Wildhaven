@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { Suspense } from 'react'
 import HeroSection from '@/components/home/HeroSection'
 import WildlifeTicker from '@/components/home/WildlifeTicker'
