@@ -9,17 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-email/components": "^1.0.12",
     "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.45.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.14",
+    "lucide-react": "^1.14.0",
     "mapbox-gl": "^3.6.0",
     "next": "^16.2.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-intersection-observer": "^9.13.0"
+    "react-intersection-observer": "^9.13.0",
+    "resend": "^6.12.3"
   },
   "devDependencies": {
     "@types/mapbox-gl": "^3.4.0",
