@@ -5,121 +5,245 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-// ─── Real packages matching Savanna Sojourns ────────────────────────────────
+// ── All packages including Serengeti-based ones ──────────────────────────────
 const PACKAGES = [
-  { value: 'mara-luxury-ashnil',    label: '4-Day Maasai Mara Luxury Safari',          price: '$2,744/pp', badge: 'Luxury' },
-  { value: 'family-circuit-sopa',   label: '7-Day Family Safari at Sopa Lodges',        price: '$2,672/pp', badge: 'Family' },
-  { value: 'mara-nakuru-hells-gate',label: '5-Day Mara, Nakuru & Hell\'s Gate',         price: '$1,568/pp', badge: 'Popular' },
-  { value: 'rift-valley-naivasha',  label: '5-Day Through the Rift Valley',             price: '$1,420/pp', badge: '' },
-  { value: 'kenya-classic-circuit', label: '7-Day Kenya Classic Safari',                price: '$2,190/pp', badge: '' },
-  { value: 'mombasa-beach-safari',  label: '8-Day Kenya Odyssey to Mombasa',            price: '$2,480/pp', badge: '' },
-  { value: 'taita-salt-lick',       label: '5-Day Taita Hills & Salt Lick via Mombasa', price: '$1,680/pp', badge: '' },
-  { value: 'ol-pejeta-laikipia',    label: '4-Day Ol Pejeta Conservancy',               price: '$3,200/pp', badge: 'Exclusive' },
-  { value: 'custom',                label: 'Custom / Not sure yet',                     price: 'TBD',       badge: '' },
+  { value: 'mara-luxury-ashnil',     label: '4-Day Maasai Mara Luxury Safari',           price: 2744, days: 4, badge: 'Luxury' },
+  { value: 'family-circuit-sopa',    label: '7-Day Family Safari at Sopa Lodges',         price: 2672, days: 7, badge: 'Family' },
+  { value: 'mara-nakuru-hells-gate', label: "5-Day Mara, Nakuru & Hell's Gate",           price: 1568, days: 5, badge: 'Popular' },
+  { value: 'rift-valley-naivasha',   label: '5-Day Through the Rift Valley',              price: 1420, days: 5, badge: '' },
+  { value: 'kenya-classic-circuit',  label: '7-Day Kenya Classic Safari',                 price: 2190, days: 7, badge: '' },
+  { value: 'mombasa-beach-safari',   label: '8-Day Kenya Odyssey to Mombasa',             price: 2480, days: 8, badge: '' },
+  { value: 'taita-salt-lick',        label: '5-Day Taita Hills & Salt Lick via Mombasa',  price: 1680, days: 5, badge: '' },
+  { value: 'ol-pejeta-laikipia',     label: '4-Day Ol Pejeta Conservancy',                price: 3200, days: 4, badge: 'Exclusive' },
+  { value: 'serengeti-group',        label: '8-Day Serengeti Group Adventure',            price: 1100, days: 8, badge: '' },
+  { value: 'serengeti-classic',      label: '7-Day Serengeti & Ngorongoro Classic',       price: 2190, days: 7, badge: '' },
+  { value: 'custom',                 label: 'Custom / Not sure yet — help me choose',     price: 0,    days: 0, badge: '' },
 ]
 
 const GROUP_OPTIONS = [
-  { value: '1',   label: 'Solo',         icon: '🧍', desc: '1 traveller' },
-  { value: '2',   label: 'Couple',       icon: '👫', desc: '2 travellers' },
-  { value: '3-5', label: 'Small Group',  icon: '👨‍👩‍👧', desc: '3–5 travellers' },
-  { value: '6+',  label: 'Large Group',  icon: '👥', desc: '6 or more' },
+  { value: '1',   label: 'Solo',        icon: '🧍', desc: '1 traveller' },
+  { value: '2',   label: 'Couple',      icon: '👫', desc: '2 travellers' },
+  { value: '3-5', label: 'Small Group', icon: '👨‍👩‍👧', desc: '3–5 travellers' },
+  { value: '6+',  label: 'Large Group', icon: '👥', desc: '6 or more' },
 ]
 
-// Payment intent options
-const PAYMENT_OPTIONS = [
-  {
-    value: 'booking_fee',
-    label: 'Pay Booking Fee Now',
-    desc: '$150 to secure your slot — deducted from total',
-    badge: 'Recommended',
-  },
-  {
-    value: 'deposit',
-    label: 'Pay 30% Deposit',
-    desc: 'Confirms booking, balance due 60 days before travel',
-    badge: '',
-  },
-  {
-    value: 'full',
-    label: 'Pay in Full',
-    desc: 'Pay 100% now and get 3% discount on total',
-    badge: 'Best Value',
-  },
-  {
-    value: 'enquire',
-    label: 'Enquire First',
-    desc: 'No payment now — talk to us before committing',
-    badge: '',
-  },
-]
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function calcEndDate(start: string, days: number): string {
+  if (!start || !days) return ''
+  const d = new Date(start)
+  d.setDate(d.getDate() + days - 1)
+  return d.toISOString().split('T')[0]
+}
 
+function fmtDate(s: string): string {
+  if (!s) return ''
+  return new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function fmtUSD(n: number): string {
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+}
+
+// ── Phone input component ─────────────────────────────────────────────────────
+// Uses react-phone-number-input if available, falls back to a clean manual input
+function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  // Try to use react-phone-number-input dynamically
+  const [PhoneField, setPhoneField] = useState<any>(null)
+
+  useEffect(() => {
+    import('react-phone-number-input').then(mod => {
+      setPhoneField(mod.default)
+    }).catch(() => {
+      // Library not installed — use fallback
+      setPhoneField(null)
+    })
+  }, [])
+
+  const inputCls = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/35 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors [color-scheme:dark]"
+
+  if (PhoneField) {
+    return (
+      <>
+        <style>{`
+          .PhoneInput { display: flex; gap: 8px; }
+          .PhoneInputCountry { display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 2px; padding: 0 12px; gap: 6px; cursor: pointer; flex-shrink: 0; }
+          .PhoneInputCountrySelect { background: #1C1008; color: #F7F0E4; border: none; outline: none; font-size: 13px; cursor: pointer; padding: 4px 0; }
+          .PhoneInputCountryIcon { font-size: 18px; }
+          .PhoneInputInput { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #F7F0E4; padding: 12px 16px; font-size: 14px; font-weight: 300; border-radius: 2px; outline: none; transition: border-color 0.3s; }
+          .PhoneInputInput:focus { border-color: rgba(212,130,10,0.5); }
+          .PhoneInputInput::placeholder { color: rgba(247,240,228,0.35); }
+        `}</style>
+        <PhoneField
+          value={value}
+          onChange={(v: any) => onChange(v || '')}
+          defaultCountry="KE"
+          international
+          className="PhoneInput"
+          placeholder="700 000 000"
+        />
+      </>
+    )
+  }
+
+  // Fallback: clean select + input
+  const CODES = [
+    { code: '+254', label: '🇰🇪 +254 Kenya' },
+    { code: '+255', label: '🇹🇿 +255 Tanzania' },
+    { code: '+256', label: '🇺🇬 +256 Uganda' },
+    { code: '+250', label: '🇷🇼 +250 Rwanda' },
+    { code: '+27',  label: '🇿🇦 +27 South Africa' },
+    { code: '+1',   label: '🇺🇸 +1 USA/Canada' },
+    { code: '+44',  label: '🇬🇧 +44 UK' },
+    { code: '+61',  label: '🇦🇺 +61 Australia' },
+    { code: '+49',  label: '🇩🇪 +49 Germany' },
+    { code: '+33',  label: '🇫🇷 +33 France' },
+    { code: '+31',  label: '🇳🇱 +31 Netherlands' },
+    { code: '+39',  label: '🇮🇹 +39 Italy' },
+    { code: '+34',  label: '🇪🇸 +34 Spain' },
+    { code: '+91',  label: '🇮🇳 +91 India' },
+    { code: '+971', label: '🇦🇪 +971 UAE' },
+    { code: '+966', label: '🇸🇦 +966 Saudi Arabia' },
+    { code: '+86',  label: '🇨🇳 +86 China' },
+    { code: '+81',  label: '🇯🇵 +81 Japan' },
+    { code: '+7',   label: '🇷🇺 +7 Russia' },
+    { code: '+55',  label: '🇧🇷 +55 Brazil' },
+    { code: '+52',  label: '🇲🇽 +52 Mexico' },
+    { code: '+other', label: '🌍 Other' },
+  ]
+
+  const parts = value.split(' ')
+  const selCode = CODES.find(c => parts[0] === c.code)?.code || '+254'
+  const num     = parts.length > 1 ? parts.slice(1).join(' ') : ''
+
+  const update = (code: string, n: string) => {
+    onChange(code === '+other' ? n : `${code} ${n}`.trim())
+  }
+
+  return (
+    <div className="flex gap-2">
+      <select
+        value={selCode}
+        onChange={e => update(e.target.value, num)}
+        className="bg-white/5 border border-white/20 text-ivory rounded-sm px-3 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors [color-scheme:dark] flex-shrink-0"
+        style={{ width: '160px' }}
+      >
+        {CODES.map(c => (
+          <option key={c.code} value={c.code}>{c.label}</option>
+        ))}
+      </select>
+      <input
+        type="tel"
+        placeholder="700 000 000"
+        value={num}
+        onChange={e => update(selCode, e.target.value)}
+        className={cn(inputCls, 'flex-1')}
+      />
+    </div>
+  )
+}
+
+// ── Main form ────────────────────────────────────────────────────────────────
 function ContactForm() {
-  const searchParams = useSearchParams()
-  const fromPlanner  = searchParams.get('from') === 'planner'
-  const prefPackage  = searchParams.get('package') || ''
-  const prefTravellers = searchParams.get('travellers') || ''
+  const searchParams  = useSearchParams()
+  const fromPlanner   = searchParams.get('from') === 'planner'
+  const prePackage    = searchParams.get('package') || ''
+  const preTravellers = searchParams.get('travellers') || ''
+  const preName       = searchParams.get('name')  ? decodeURIComponent(searchParams.get('name')!)  : ''
+  const preEmail      = searchParams.get('email') ? decodeURIComponent(searchParams.get('email')!) : ''
 
-  const [step, setStep] = useState(1) // 3-step form
+  const hasPreselected = !!prePackage
+  const [step,       setStep]   = useState(hasPreselected ? 2 : 1)
+  const [phone,      setPhone]  = useState('')
+  const [submitting, setSub]    = useState(false)
+  const [success,    setOk]     = useState(false)
+  const [error,      setErr]    = useState('')
+
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    package_slug: prefPackage,
-    group_size: prefTravellers,
-    travel_start: '',
-    travel_end: '',
+    name:           preName,
+    email:          preEmail,
+    package_slug:   prePackage,
+    group_size:     preTravellers,
+    safari_start:   '',
     payment_intent: 'enquire',
-    message: '',
+    message:        fromPlanner ? 'I reviewed my AI safari suggestion and would like to proceed.' : '',
   })
-  const [submitting, setSubmitting] = useState(false)
-  const [success,    setSuccess]    = useState(false)
-  const [error,      setError]      = useState('')
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
-  // Pre-fill from planner redirect
-  useEffect(() => {
-    const n = searchParams.get('name')
-    const e = searchParams.get('email')
-    if (n || e) {
-      setForm(f => ({
-        ...f,
-        name:    n ? decodeURIComponent(n) : f.name,
-        email:   e ? decodeURIComponent(e) : f.email,
-        message: fromPlanner ? 'I reviewed my AI safari suggestion and would like to proceed.' : f.message,
-      }))
-    }
-  }, [fromPlanner, searchParams])
+  const pkg      = PACKAGES.find(p => p.value === form.package_slug)
+  const endDate  = pkg ? calcEndDate(form.safari_start, pkg.days) : ''
+  const fullAmt  = pkg?.price ? fmtUSD(pkg.price) : ''
+  const halfAmt  = pkg?.price ? fmtUSD(pkg.price / 2) : ''
+
+  const PAYMENT_OPTIONS = [
+    {
+      value: 'full',
+      label: 'Pay in Full',
+      desc: pkg?.price ? `${fullAmt}/pp — full payment to confirm your booking` : 'Full payment to confirm your booking',
+      badge: '',
+    },
+    {
+      value: 'half',
+      label: 'Pay 50%',
+      desc: pkg?.price ? `${halfAmt}/pp now — balance due 30 days before safari start` : '50% now, balance due 30 days before safari',
+      badge: 'Popular',
+    },
+    {
+      value: 'installments',
+      label: 'Pay in Installments',
+      desc: 'Discuss a custom payment plan with us on WhatsApp',
+      badge: '',
+    },
+    {
+      value: 'enquire',
+      label: 'Enquire First',
+      desc: 'No payment now — get full details before committing',
+      badge: '',
+    },
+  ]
 
   const submit = async () => {
-    if (!form.name || !form.email) { setError('Name and email are required.'); return }
-    setSubmitting(true); setError('')
+    if (!form.name || !form.email) { setErr('Name and email are required.'); return }
+    setSub(true); setErr('')
     try {
       const res  = await fetch('/api/inquiry', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form,
-          travel_dates: form.travel_start && form.travel_end
-            ? `${form.travel_start} to ${form.travel_end}`
-            : form.travel_start || '',
+          name:             form.name,
+          email:            form.email,
+          phone:            phone || null,
+          package_slug:     form.package_slug,
+          group_size:       form.group_size || 1,
+          travel_start:     form.safari_start || null,
+          package_duration: pkg?.days || 0,
+          payment_intent:   form.payment_intent,
+          message:          form.message || null,
+          target_budget:    pkg?.price ? `$${pkg.price}/pp` : null,
+          source:           fromPlanner ? 'planner' : 'website',
         }),
       })
       const data = await res.json()
-      if (data.success) setSuccess(true)
-      else setError(data.error || 'Something went wrong.')
+      if (data.success) {
+        if (form.payment_intent === 'installments') {
+          const msg = `Hi Zazu Safaris! I'm ${form.name} and I'd like to discuss installment payments for the ${pkg?.label || 'safari package'}. Email: ${form.email}.`
+          window.open(`https://wa.me/254141481665?text=${encodeURIComponent(msg)}`, '_blank')
+        }
+        setOk(true)
+      } else {
+        setErr(data.error || 'Something went wrong. Please try again.')
+      }
     } catch {
-      setError('Network error. Please try again.')
+      setErr('Network error. Please try again.')
     } finally {
-      setSubmitting(false)
+      setSub(false)
     }
   }
 
-  const inputCls = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/40 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors [color-scheme:dark]"
+  const inputCls = "w-full bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/35 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors [color-scheme:dark]"
   const labelCls = "block text-[0.62rem] tracking-[0.18em] uppercase text-ivory/40 mb-2"
 
-  const selectedPackage = PACKAGES.find(p => p.value === form.package_slug)
-
+  // ── Success ────────────────────────────────────────────────────────────────
   if (success) return (
     <div className="text-center py-16">
       <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto mb-6">
@@ -128,22 +252,21 @@ function ContactForm() {
       <h3 className="text-3xl text-ivory mb-3" style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}>
         Safari Brief Received
       </h3>
-      <p className="text-sm text-ivory/40 max-w-sm mx-auto leading-relaxed font-light mb-2">
-        We've sent a confirmation to <span className="text-ivory/70">{form.email}</span>.
+      <p className="text-sm text-ivory/45 max-w-sm mx-auto leading-relaxed font-light mb-2">
+        Confirmation sent to <span className="text-ivory/70">{form.email}</span>.
       </p>
       <p className="text-sm text-ivory/40 max-w-sm mx-auto leading-relaxed font-light">
-        Our team will reach out within 2 hours via email{form.phone ? ' and WhatsApp' : ''} with your personalised proposal.
+        Our team will reach out within 2 hours with your personalised proposal.
       </p>
-      {form.payment_intent !== 'enquire' && (
-        <div className="mt-8 p-4 border border-gold/20 rounded-sm max-w-sm mx-auto">
-          <p className="text-xs text-gold/70 mb-1 uppercase tracking-widest">Payment</p>
-          <p className="text-sm text-ivory/60 font-light">
-            Our team will send you a secure Pesapal payment link for your{' '}
+      {(form.payment_intent === 'full' || form.payment_intent === 'half') && pkg && (
+        <div className="mt-8 p-4 border border-gold/20 rounded-sm max-w-sm mx-auto text-left">
+          <p className="text-xs text-gold/70 mb-1.5 uppercase tracking-widest">Payment</p>
+          <p className="text-sm text-ivory/55 font-light leading-relaxed">
+            A secure Pesapal link for your{' '}
             <strong className="text-ivory">
-              {form.payment_intent === 'booking_fee' ? '$150 booking fee' :
-               form.payment_intent === 'deposit'     ? '30% deposit'      : 'full payment'}
-            </strong>{' '}
-            via M-Pesa or card.
+              {form.payment_intent === 'full' ? `full payment (${fullAmt}/pp)` : `50% deposit (${halfAmt}/pp)`}
+            </strong>
+            {' '}will arrive in your email within 2 hours. Accepted: M-Pesa & card.
           </p>
         </div>
       )}
@@ -153,61 +276,65 @@ function ContactForm() {
     </div>
   )
 
+  // ── Step indicator ─────────────────────────────────────────────────────────
+  const stepLabels = hasPreselected ? ['Your Details', 'Confirm'] : ['Choose Safari', 'Your Details', 'Confirm']
+  const stepNums   = hasPreselected ? [2, 3] : [1, 2, 3]
+
   return (
     <div>
-      {/* Step indicator */}
       <div className="flex items-center gap-2 mb-8">
-        {['Choose Safari', 'Your Details', 'Confirm'].map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={cn(
-              'flex items-center gap-2 text-[0.65rem] tracking-wide uppercase transition-colors',
-              step === i + 1 ? 'text-gold' : step > i + 1 ? 'text-ivory/40' : 'text-ivory/20'
-            )}>
-              <span className={cn(
-                'w-5 h-5 rounded-full border flex items-center justify-center text-[0.6rem] flex-shrink-0',
-                step === i + 1 ? 'border-gold text-gold' :
-                step > i + 1  ? 'border-ivory/30 bg-ivory/10 text-ivory/50' :
-                                 'border-white/15 text-ivory/20'
+        {stepLabels.map((label, i) => {
+          const sn = stepNums[i]
+          return (
+            <div key={label} className="flex items-center gap-2 flex-1">
+              <div className={cn(
+                'flex items-center gap-1.5 text-[0.62rem] tracking-wide uppercase transition-colors whitespace-nowrap',
+                step === sn ? 'text-gold' : step > sn ? 'text-ivory/35' : 'text-ivory/20'
               )}>
-                {step > i + 1 ? '✓' : i + 1}
-              </span>
-              <span className="hidden sm:inline">{s}</span>
+                <span className={cn(
+                  'w-5 h-5 rounded-full border flex items-center justify-center text-[0.58rem] flex-shrink-0',
+                  step === sn ? 'border-gold text-gold' :
+                  step > sn  ? 'border-ivory/25 bg-ivory/8 text-ivory/40' :
+                               'border-white/12 text-ivory/20'
+                )}>
+                  {step > sn ? '✓' : i + 1}
+                </span>
+                <span className="hidden sm:inline">{label}</span>
+              </div>
+              {i < stepLabels.length - 1 && (
+                <div className={cn('flex-1 h-px', step > sn ? 'bg-ivory/15' : 'bg-white/6')} />
+              )}
             </div>
-            {i < 2 && <div className={cn('flex-1 h-px min-w-[20px]', step > i + 1 ? 'bg-ivory/20' : 'bg-white/8')} />}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
-      {/* ── STEP 1: Choose Safari & Group ─────────────────── */}
+      {/* ── STEP 1: Choose package ──────────────────────────── */}
       {step === 1 && (
         <div className="space-y-6">
-          {/* Package */}
           <div>
             <label className={labelCls}>Which Safari Package?</label>
-            <div className="space-y-2">
-              {PACKAGES.map(pkg => (
-                <label key={pkg.value}
-                  className={cn(
-                    'flex items-center gap-4 p-3 border rounded-sm cursor-pointer transition-all duration-200',
-                    form.package_slug === pkg.value
-                      ? 'border-gold bg-gold/6'
-                      : 'border-white/10 hover:border-white/25'
-                  )}>
-                  <input type="radio" name="package" value={pkg.value}
-                    checked={form.package_slug === pkg.value}
+            <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+              {PACKAGES.map(p => (
+                <label key={p.value} className={cn(
+                  'flex items-center gap-4 p-3 border rounded-sm cursor-pointer transition-all duration-200',
+                  form.package_slug === p.value ? 'border-gold bg-gold/6' : 'border-white/10 hover:border-white/25'
+                )}>
+                  <input type="radio" name="package" value={p.value}
+                    checked={form.package_slug === p.value}
                     onChange={e => set('package_slug', e.target.value)}
                     className="flex-shrink-0 accent-[#D4820A]" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm text-ivory font-light">{pkg.label}</p>
-                      {pkg.badge && (
-                        <span className="text-[0.55rem] tracking-widest uppercase border border-gold/30 text-gold/70 px-1.5 py-0.5 rounded-sm">
-                          {pkg.badge}
+                      <p className="text-sm text-ivory font-light">{p.label}</p>
+                      {p.badge && (
+                        <span className="text-[0.52rem] tracking-widest uppercase border border-gold/30 text-gold/60 px-1.5 py-0.5 rounded-sm">
+                          {p.badge}
                         </span>
                       )}
                     </div>
-                    {pkg.value !== 'custom' && (
-                      <p className="text-xs text-gold/60 mt-0.5">{pkg.price}</p>
+                    {p.value !== 'custom' && p.price > 0 && (
+                      <p className="text-xs text-gold/55 mt-0.5">${p.price.toLocaleString()}/pp · {p.days} days</p>
                     )}
                   </div>
                 </label>
@@ -215,51 +342,24 @@ function ContactForm() {
             </div>
           </div>
 
-          {/* Group size */}
           <div>
             <label className={labelCls}>How Many Are Travelling?</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {GROUP_OPTIONS.map(g => (
-                <button key={g.value}
-                  onClick={() => set('group_size', g.value)}
+                <button key={g.value} onClick={() => set('group_size', g.value)}
                   className={cn(
-                    'p-3 border rounded-sm text-center transition-all duration-200',
-                    form.group_size === g.value
-                      ? 'border-gold bg-gold/8'
-                      : 'border-white/10 hover:border-gold/30'
+                    'p-3 border rounded-sm text-center transition-all',
+                    form.group_size === g.value ? 'border-gold bg-gold/8' : 'border-white/10 hover:border-gold/30'
                   )}>
                   <span className="text-xl block mb-1">{g.icon}</span>
                   <p className="text-xs text-ivory font-medium">{g.label}</p>
-                  <p className="text-[0.6rem] text-ivory/35">{g.desc}</p>
+                  <p className="text-[0.58rem] text-ivory/30">{g.desc}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Travel dates */}
-          <div>
-            <label className={labelCls}>Preferred Travel Dates</label>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-[0.6rem] text-ivory/30 mb-1.5">Departure Date</p>
-                <input type="date" value={form.travel_start}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={e => set('travel_start', e.target.value)}
-                  className={inputCls} />
-              </div>
-              <div>
-                <p className="text-[0.6rem] text-ivory/30 mb-1.5">Return Date</p>
-                <input type="date" value={form.travel_end}
-                  min={form.travel_start || new Date().toISOString().split('T')[0]}
-                  onChange={e => set('travel_end', e.target.value)}
-                  className={inputCls} />
-              </div>
-            </div>
-            <p className="text-[0.62rem] text-ivory/25 mt-1.5">Not sure yet? Leave blank — we'll work around your schedule.</p>
-          </div>
-
-          <button onClick={() => setStep(2)}
-            disabled={!form.package_slug}
+          <button onClick={() => setStep(2)} disabled={!form.package_slug}
             className={cn(
               'btn-shine w-full text-[0.78rem] tracking-[0.14em] uppercase font-medium py-4 rounded-sm transition-all',
               form.package_slug ? 'bg-gold text-charcoal hover:bg-gold-light' : 'bg-white/10 text-ivory/30 cursor-not-allowed'
@@ -269,13 +369,30 @@ function ContactForm() {
         </div>
       )}
 
-      {/* ── STEP 2: Contact Details ────────────────────────── */}
+      {/* ── STEP 2: Contact details ─────────────────────────── */}
       {step === 2 && (
         <div className="space-y-5">
+          {/* Package badge */}
+          {pkg && (
+            <div className="border border-gold/20 bg-gold/5 rounded-sm p-4 flex items-center justify-between">
+              <div>
+                <p className="text-[0.58rem] tracking-widest uppercase text-gold/55 mb-0.5">Selected Package</p>
+                <p className="text-sm text-ivory font-medium">{pkg.label}</p>
+                {pkg.price > 0 && (
+                  <p className="text-xs text-gold/55 mt-0.5">${pkg.price.toLocaleString()}/pp · {pkg.days} days</p>
+                )}
+              </div>
+              <button onClick={() => { set('package_slug', ''); setStep(1) }}
+                className="text-[0.62rem] text-ivory/30 hover:text-ivory/60 transition-colors uppercase tracking-wide border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-sm">
+                Change
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <label className={labelCls}>Full Name *</label>
-              <input type="text" placeholder="Your name" value={form.name}
+              <input type="text" placeholder="Your full name" value={form.name}
                 onChange={e => set('name', e.target.value)} className={inputCls} />
             </div>
             <div>
@@ -287,61 +404,76 @@ function ContactForm() {
 
           <div>
             <label className={labelCls}>WhatsApp / Phone</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ivory/50 text-sm font-medium pointer-events-none">
-                {form.phone.split(' ')[0] || '+254'}
-              </span>
-              <input type="tel" placeholder="700 000 000" 
-                value={form.phone.split(' ').slice(1).join(' ')}
-                onChange={e => {
-                  const countryCode = form.phone.split(' ')[0] || '+254'
-                  set('phone', `${countryCode} ${e.target.value}`.trim())
-                }}
-                onFocus={() => {
-                  // Show country code selector on focus if no code set
-                  if (!form.phone) set('phone', '+254 ')
-                }}
-                className={cn(inputCls, 'pl-16')}
-              />
-              {/* Hidden country code selector - accessible via click */}
-              <select value={form.phone.split(' ')[0] || '+254'}
-                onChange={e => {
-                  const currentNumber = form.phone.split(' ').slice(1).join(' ') || ''
-                  set('phone', `${e.target.value} ${currentNumber}`.trim())
-                }}
-                className="absolute inset-0 opacity-0 cursor-pointer w-16">
-                <option value="+254">🇰🇪 +254</option>
-                <option value="+255">🇹🇿 +255</option>
-                <option value="+256">🇺🇬 +256</option>
-                <option value="+27">🇿🇦 +27</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-                <option value="+61">🇦🇺 +61</option>
-                <option value="+33">🇫🇷 +33</option>
-                <option value="+49">🇩🇪 +49</option>
-                <option value="+39">🇮🇹 +39</option>
-                <option value="+34">🇪🇸 +34</option>
-                <option value="+91">🇮🇳 +91</option>
-              </select>
-              <p className="text-[0.62rem] text-ivory/25 mt-1.5">Click code to change country. We'll send confirmation here.</p>
+            <PhoneInput value={phone} onChange={setPhone} />
+            <p className="text-[0.6rem] text-ivory/22 mt-1.5">We'll send your booking confirmation here too.</p>
+          </div>
+
+          {/* Group size (only if not already set) */}
+          {!form.group_size && (
+            <div>
+              <label className={labelCls}>How Many Are Travelling?</label>
+              <div className="grid grid-cols-4 gap-2">
+                {GROUP_OPTIONS.map(g => (
+                  <button key={g.value} onClick={() => set('group_size', g.value)}
+                    className={cn(
+                      'p-3 border rounded-sm text-center transition-all',
+                      form.group_size === g.value ? 'border-gold bg-gold/8' : 'border-white/10 hover:border-gold/30'
+                    )}>
+                    <span className="text-xl block mb-1">{g.icon}</span>
+                    <p className="text-xs text-ivory">{g.label}</p>
+                  </button>
+                ))}
+              </div>
             </div>
+          )}
+
+          {/* Safari start date only */}
+          <div>
+            <label className={labelCls}>Preferred Safari Start Date</label>
+            <input
+              type="date"
+              value={form.safari_start}
+              min={new Date().toISOString().split('T')[0]}
+              onChange={e => set('safari_start', e.target.value)}
+              className={inputCls}
+            />
+            {form.safari_start && pkg && pkg.days > 0 && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-ivory/45">
+                <span className="text-gold/60 flex-shrink-0">✓</span>
+                <span>
+                  Your safari: <span className="text-ivory/70">{fmtDate(form.safari_start)}</span>
+                  {' '}→{' '}
+                  <span className="text-ivory/70">{fmtDate(endDate)}</span>
+                  <span className="text-ivory/30 ml-1">({pkg.days} days)</span>
+                </span>
+              </div>
+            )}
+            <p className="text-[0.6rem] text-ivory/22 mt-1.5">Not sure yet? Leave blank — we'll work around your schedule.</p>
           </div>
 
           <div>
-            <label className={labelCls}>Anything Specific? (Optional)</label>
-            <textarea rows={3} placeholder="Special occasions, dietary needs, accessibility, specific animals you want to see…"
-              value={form.message} onChange={e => set('message', e.target.value)}
+            <label className={labelCls}>Anything to Know? (Optional)</label>
+            <textarea rows={3}
+              placeholder="Special occasions, dietary requirements, accessibility needs, specific animals you want to see…"
+              value={form.message}
+              onChange={e => set('message', e.target.value)}
               className={cn(inputCls, 'resize-none')} />
           </div>
 
-          {error && <p className="text-red-400/80 text-sm">{error}</p>}
+          {error && <p className="text-red-400/75 text-sm">{error}</p>}
 
           <div className="flex gap-3">
-            <button onClick={() => setStep(1)}
-              className="text-[0.72rem] tracking-wide uppercase text-ivory/40 border border-white/12 px-5 py-3 rounded-sm hover:border-white/25 hover:text-ivory/60 transition-all">
-              ← Back
-            </button>
-            <button onClick={() => { if (!form.name || !form.email) { setError('Name and email are required.'); return }; setError(''); setStep(3) }}
+            {!hasPreselected && (
+              <button onClick={() => setStep(1)}
+                className="text-[0.72rem] tracking-wide uppercase text-ivory/35 border border-white/12 px-5 py-3 rounded-sm hover:border-white/25 hover:text-ivory/55 transition-all">
+                ← Back
+              </button>
+            )}
+            <button
+              onClick={() => {
+                if (!form.name || !form.email) { setErr('Name and email are required.'); return }
+                setErr(''); setStep(3)
+              }}
               className="btn-shine flex-1 text-[0.78rem] tracking-[0.14em] uppercase font-medium bg-gold text-charcoal py-3 rounded-sm hover:bg-gold-light transition-all">
               Continue → Confirm
             </button>
@@ -349,52 +481,38 @@ function ContactForm() {
         </div>
       )}
 
-      {/* ── STEP 3: Confirm & Payment Intent ──────────────── */}
+      {/* ── STEP 3: Summary + Payment ───────────────────────── */}
       {step === 3 && (
         <div className="space-y-6">
           {/* Summary */}
-          <div className="border border-white/10 rounded-sm p-5 space-y-3">
-            <p className="text-[0.62rem] tracking-[0.2em] uppercase text-gold/60">Booking Summary</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-ivory/40">Package</span>
-                <span className="text-ivory text-right max-w-[60%]">{selectedPackage?.label || 'Custom'}</span>
+          <div className="border border-white/10 rounded-sm p-5 space-y-2.5 text-sm">
+            <p className="text-[0.6rem] tracking-[0.2em] uppercase text-gold/55 mb-3">Booking Summary</p>
+            {[
+              { label: 'Package',      value: pkg?.label || 'Custom' },
+              { label: 'Price',        value: pkg?.price ? `$${pkg.price.toLocaleString()}/pp` : 'TBD', gold: true },
+              { label: 'Group',        value: GROUP_OPTIONS.find(g => g.value === form.group_size)?.label || '—' },
+              { label: 'Safari Start', value: form.safari_start ? fmtDate(form.safari_start) : 'Flexible' },
+              { label: 'Safari End',   value: endDate ? fmtDate(endDate) : (form.safari_start ? '—' : 'Flexible') },
+              { label: 'Name',         value: form.name },
+              { label: 'Email',        value: form.email },
+              { label: 'Phone',        value: phone || '—' },
+            ].map(row => (
+              <div key={row.label} className="flex justify-between gap-4">
+                <span className="text-ivory/35 flex-shrink-0">{row.label}</span>
+                <span className={cn('text-right break-all', row.gold ? 'text-gold' : 'text-ivory/80')}>{row.value}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-ivory/40">Price</span>
-                <span className="text-gold">{selectedPackage?.price || 'TBD'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ivory/40">Group</span>
-                <span className="text-ivory">{GROUP_OPTIONS.find(g => g.value === form.group_size)?.label || '—'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ivory/40">Dates</span>
-                <span className="text-ivory">
-                  {form.travel_start && form.travel_end
-                    ? `${form.travel_start} → ${form.travel_end}`
-                    : form.travel_start || 'Flexible'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ivory/40">Name</span>
-                <span className="text-ivory">{form.name}</span>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Payment intent */}
+          {/* Payment options */}
           <div>
             <label className={labelCls}>How Would You Like to Proceed?</label>
             <div className="space-y-2">
               {PAYMENT_OPTIONS.map(opt => (
-                <label key={opt.value}
-                  className={cn(
-                    'flex items-start gap-4 p-4 border rounded-sm cursor-pointer transition-all duration-200',
-                    form.payment_intent === opt.value
-                      ? 'border-gold bg-gold/6'
-                      : 'border-white/10 hover:border-white/25'
-                  )}>
+                <label key={opt.value} className={cn(
+                  'flex items-start gap-4 p-4 border rounded-sm cursor-pointer transition-all duration-200',
+                  form.payment_intent === opt.value ? 'border-gold bg-gold/6' : 'border-white/10 hover:border-white/22'
+                )}>
                   <input type="radio" name="payment" value={opt.value}
                     checked={form.payment_intent === opt.value}
                     onChange={e => set('payment_intent', e.target.value)}
@@ -403,52 +521,72 @@ function ContactForm() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm text-ivory font-medium">{opt.label}</p>
                       {opt.badge && (
-                        <span className="text-[0.55rem] tracking-widest uppercase border border-gold/30 text-gold/70 px-1.5 py-0.5 rounded-sm">
-                          {opt.badge}
-                        </span>
+                        <span className="text-[0.52rem] tracking-widest uppercase border border-gold/30 text-gold/60 px-1.5 py-0.5 rounded-sm">{opt.badge}</span>
                       )}
                     </div>
-                    <p className="text-xs text-ivory/40 mt-0.5">{opt.desc}</p>
+                    <p className="text-xs text-ivory/40 mt-0.5 leading-relaxed">{opt.desc}</p>
                   </div>
                 </label>
               ))}
             </div>
-            {form.payment_intent !== 'enquire' && (
+
+            {/* Contextual note */}
+            {form.payment_intent === 'installments' && (
+              <div className="mt-3 p-3 bg-green-900/20 border border-green-400/20 rounded-sm flex gap-3">
+                <span className="text-green-400 flex-shrink-0 mt-0.5">💬</span>
+                <p className="text-xs text-ivory/50 leading-relaxed">
+                  After submitting, you'll be redirected to WhatsApp to discuss a payment schedule directly with our team.
+                </p>
+              </div>
+            )}
+            {(form.payment_intent === 'full' || form.payment_intent === 'half') && (pkg?.price ?? 0) > 0 && (
               <div className="mt-3 p-3 bg-gold/5 border border-gold/15 rounded-sm">
                 <p className="text-xs text-ivory/50 leading-relaxed">
-                  <span className="text-gold">Accepted:</span> M-Pesa, Visa, Mastercard via Pesapal.
-                  A secure payment link will be sent to <span className="text-ivory/70">{form.email}</span> within 2 hours of your submission.
+                  <span className="text-gold font-medium">Amount due: </span>
+                  <strong className="text-ivory">
+                    {form.payment_intent === 'full' ? fullAmt : halfAmt} per person
+                  </strong>
+                  {' '}— a secure Pesapal link (M-Pesa or card) will be sent to your email within 2 hours.
+                </p>
+              </div>
+            )}
+            {form.payment_intent === 'enquire' && (
+              <div className="mt-3 p-3 bg-white/3 border border-white/8 rounded-sm">
+                <p className="text-xs text-ivory/40 leading-relaxed">
+                  No payment required. Our team will send you full package details, availability, and pricing within 2 hours.
                 </p>
               </div>
             )}
           </div>
 
-          {error && <p className="text-red-400/80 text-sm">{error}</p>}
+          {error && <p className="text-red-400/75 text-sm">{error}</p>}
 
           <div className="flex gap-3">
             <button onClick={() => setStep(2)}
-              className="text-[0.72rem] tracking-wide uppercase text-ivory/40 border border-white/12 px-5 py-4 rounded-sm hover:border-white/25 hover:text-ivory/60 transition-all">
+              className="text-[0.72rem] tracking-wide uppercase text-ivory/35 border border-white/12 px-5 py-4 rounded-sm hover:border-white/25 hover:text-ivory/55 transition-all">
               ← Back
             </button>
             <button onClick={submit} disabled={submitting}
               className={cn(
                 'btn-shine flex-1 text-[0.78rem] tracking-[0.14em] uppercase font-medium py-4 rounded-sm transition-all',
-                submitting ? 'bg-gold/50 text-charcoal/50 cursor-not-allowed' : 'bg-gold text-charcoal hover:bg-gold-light'
+                submitting
+                  ? 'bg-gold/50 text-charcoal/50 cursor-not-allowed'
+                  : 'bg-gold text-charcoal hover:bg-gold-light'
               )}>
               {submitting ? 'Sending…' :
-               form.payment_intent === 'enquire' ? 'Send Enquiry →' : 'Submit & Await Payment Link →'}
+               form.payment_intent === 'enquire'      ? 'Send Enquiry →' :
+               form.payment_intent === 'installments' ? 'Submit & Chat on WhatsApp →' :
+               'Submit & Await Payment Link →'}
             </button>
           </div>
-
-          <p className="text-[0.65rem] text-ivory/20 text-center">
-            We respond within 2 hours · No spam · Your data is never sold
-          </p>
+          <p className="text-[0.6rem] text-ivory/20 text-center">We respond within 2 hours · No spam · Your data is never sold</p>
         </div>
       )}
     </div>
   )
 }
 
+// ── Page ─────────────────────────────────────────────────────────────────────
 export default function ContactPage() {
   return (
     <>
@@ -460,7 +598,7 @@ export default function ContactPage() {
             Let&apos;s Make It<br />Happen.
           </h1>
           <p className="text-sm text-ivory/40 max-w-md font-light leading-relaxed">
-            Three steps. Two minutes. One unforgettable safari — confirmed and waiting for you.
+            Three steps. Two minutes. One unforgettable safari.
           </p>
         </div>
       </section>
@@ -468,14 +606,14 @@ export default function ContactPage() {
       <section className="py-16 px-6 bg-charcoal">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-          {/* Left: Why book with us */}
+          {/* Left: Trust points */}
           <div className="space-y-10">
             <div className="space-y-6">
               {[
-                { icon: '🔒', title: 'Secure & Transparent', desc: 'Pay via M-Pesa or card through Pesapal — Kenya\'s most trusted payment gateway. No hidden charges, ever.' },
-                { icon: '✦',  title: 'Free Custom Itinerary', desc: 'Every booking includes a personalised day-by-day itinerary built around your group and interests.' },
-                { icon: '📅', title: 'Flexible Dates', desc: 'Can\'t commit to exact dates? Enquire now, lock in dates later. We hold your slot for 48 hours.' },
-                { icon: '💬', title: 'Human Support', desc: 'Real people, real answers. We reply on WhatsApp and email — usually within the hour.' },
+                { icon: '🔒', title: 'Secure Payments',       desc: 'Pay via M-Pesa or card through Pesapal. No hidden charges, ever.' },
+                { icon: '✦',  title: 'Free Custom Itinerary', desc: 'Every booking includes a personalised day-by-day plan.' },
+                { icon: '📅', title: 'Flexible Safari Dates', desc: "Can't commit yet? Enquire now, lock in dates later. We hold your slot 48 hours." },
+                { icon: '💬', title: 'Human Support',         desc: 'Real people on WhatsApp and email — usually within the hour.' },
               ].map(p => (
                 <div key={p.title} className="flex gap-4">
                   <span className="text-lg flex-shrink-0 mt-0.5">{p.icon}</span>
@@ -487,17 +625,15 @@ export default function ContactPage() {
               ))}
             </div>
 
-            {/* Direct contact */}
             <div className="glass p-6 rounded-sm space-y-4">
               <p className="text-[0.62rem] tracking-[0.2em] uppercase text-gold/60">Reach Us Directly</p>
               <a href="mailto:hello@zazusafaris.com"
-                className="flex items-center gap-3 text-sm text-ivory/60 hover:text-ivory transition-colors group">
+                className="flex items-center gap-3 text-sm text-ivory/55 hover:text-ivory transition-colors group">
                 <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/30 transition-colors text-xs">@</span>
                 hello@zazusafaris.com
               </a>
-              <a href="https://wa.me/254141481665"
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 text-sm text-ivory/60 hover:text-green-400 transition-colors group">
+              <a href="https://wa.me/254141481665" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-3 text-sm text-ivory/55 hover:text-green-400 transition-colors group">
                 <span className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-green-400/30 transition-colors text-xs">💬</span>
                 WhatsApp: +254 141 481 665
               </a>
@@ -507,7 +643,7 @@ export default function ContactPage() {
 
           {/* Right: Form */}
           <div>
-            <Suspense fallback={<div className="text-ivory/30 text-sm">Loading…</div>}>
+            <Suspense fallback={<div className="text-ivory/30 text-sm py-8">Loading form…</div>}>
               <ContactForm />
             </Suspense>
           </div>
