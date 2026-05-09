@@ -58,8 +58,9 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
 const phoneInputStyles = `
   .PhoneInput {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     width: 100%;
+    overflow-x: auto;
   }
   .PhoneInputCountry {
     display: flex;
@@ -67,11 +68,12 @@ const phoneInputStyles = `
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 2px;
-    padding: 0 12px;
-    gap: 6px;
+    padding: 0 8px;
+    gap: 4px;
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.3s;
+    min-width: fit-content;
   }
   .PhoneInputCountry:hover {
     border-color: rgba(212, 130, 10, 0.5);
@@ -81,13 +83,13 @@ const phoneInputStyles = `
     color: #F7F0E4;
     border: none;
     outline: none;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     padding: 4px 0;
     font-weight: 300;
   }
   .PhoneInputCountryIcon {
-    font-size: 18px;
+    font-size: 16px;
   }
   .PhoneInputInput {
     flex: 1;
@@ -95,7 +97,7 @@ const phoneInputStyles = `
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #F7F0E4;
-    padding: 12px 16px;
+    padding: 12px 12px;
     font-size: 14px;
     font-weight: 300;
     border-radius: 2px;
@@ -107,6 +109,25 @@ const phoneInputStyles = `
   }
   .PhoneInputInput::placeholder {
     color: rgba(247, 240, 228, 0.35);
+  }
+  @media (max-width: 640px) {
+    .PhoneInput {
+      gap: 4px;
+    }
+    .PhoneInputCountry {
+      padding: 0 6px;
+      gap: 2px;
+    }
+    .PhoneInputCountrySelect {
+      font-size: 11px;
+    }
+    .PhoneInputCountryIcon {
+      font-size: 14px;
+    }
+    .PhoneInputInput {
+      padding: 10px 10px;
+      font-size: 13px;
+    }
   }
 `
 
@@ -286,9 +307,11 @@ function ContactForm() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full">
             <label className={labelCls}>WhatsApp / Phone</label>
-            <PhoneInput value={phone} onChange={setPhone} />
+            <div className="w-full overflow-hidden">
+              <PhoneInput value={phone} onChange={setPhone} />
+            </div>
           </div>
 
           {/* Number of travellers — specific number */}
