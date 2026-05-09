@@ -116,7 +116,6 @@ export default function PlannerClient() {
 - Budget per person: $${answers.budget}
 - Interests: ${answers.animals.join(', ') || 'general wildlife'}
 - Duration: ${answers.duration || '5-7 days'}
-- Name: ${name || 'there'}
 
 Our exact packages:
 1. 4-Day Maasai Mara Luxury Safari — Ashnil Mara Lodge — $2,744/pp — Big Five, private game drives, full board
@@ -129,7 +128,7 @@ Our exact packages:
 8. 4-Day Ol Pejeta Conservancy — $3,200/pp — last northern white rhinos, wild dogs, Big Five
 
 Respond as a helpful human travel advisor. In plain HTML only (<h3><p><strong><ul><li>):
-1. Greet them by name warmly
+1. Greet them warmly (no need to use a name)
 2. Recommend 1-2 specific packages that match their budget, group type, duration AND interests — explain exactly why each fits
 3. Briefly explain what each day feels like (not a bullet list of logistics, but the actual experience)
 4. Note what's included (meals, transfers, park fees) so they know the price is all-in
