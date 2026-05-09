@@ -113,3 +113,4 @@ export default function TourCard({ tour, priority = false }: TourCardProps) {
       </div>
     </div>
   )
+}
