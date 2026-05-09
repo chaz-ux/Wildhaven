@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
+export const runtime = 'edge'
+
+export async function POST(req: Request) {
   try {
     const body = await req.json()
     const {
@@ -28,11 +29,19 @@ export async function POST(req: NextRequest) {
       computedDates = travel_start
     }
 
-    // ── 1. Save to Supabase ──────────────────────────────
-    const supabase = createClient()
-    const { data, error } = await supabase
-      .from('inquiries')
-      .insert([{
+    // ── 1. Save to Supabase via REST API (edge-compatible) ──
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    const supabaseResponse = await fetch(`${SUPABASE_URL}/rest/v1/inquiries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY!,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify({
         name,
         email,
         phone:          phone || null,
@@ -45,14 +54,17 @@ export async function POST(req: NextRequest) {
         source:         source || 'website',
         status:         'new',
         notes:          payment_intent ? `Payment intent: ${payment_intent}` : null,
-      }])
-      .select()
-      .single()
+      }),
+    })
 
-    if (error) {
-      console.error('Supabase insert error:', error)
+    if (!supabaseResponse.ok) {
+      const errorData = await supabaseResponse.json()
+      console.error('Supabase insert error:', errorData)
       return NextResponse.json({ error: 'Failed to save inquiry' }, { status: 500 })
     }
+
+    const data = await supabaseResponse.json()
+    const inquiry = Array.isArray(data) ? data[0] : data
 
     // ── 2. Notify team via Resend ────────────────────────
     if (process.env.RESEND_API_KEY) {
@@ -82,7 +94,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding:10px 0;color:#888;vertical-align:top">Message</td><td style="padding:10px 0">${message || '—'}</td></tr>
             </table>
             <div style="margin-top:20px;padding:14px;background:#fff8ee;border-left:3px solid #D4820A;border-radius:3px;font-size:13px;color:#666">
-              Reply to this email to respond directly. Inquiry ID: <code>${data.id}</code>
+              Reply to this email to respond directly. Inquiry ID: <code>${inquiry.id}</code>
             </div></div>`,
         }),
       }).catch(e => console.error('Resend notify error:', e))
@@ -126,10 +138,10 @@ export async function POST(req: NextRequest) {
       ).catch(e => console.error('Callmebot error:', e))
     }
 
-    return NextResponse.json({ success: true, id: data.id })
+    return NextResponse.json({ success: true, id: inquiry.id })
 
-  } catch (err) {
-    console.error('Inquiry API error:', err)
+  } catch (e) {
+    console.error('Inquiry API error:', e)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
