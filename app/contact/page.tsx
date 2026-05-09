@@ -58,9 +58,9 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
 const phoneInputStyles = `
   .PhoneInput {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     width: 100%;
-    overflow-x: auto;
+    align-items: stretch;
   }
   .PhoneInputCountry {
     display: flex;
@@ -68,12 +68,11 @@ const phoneInputStyles = `
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 2px;
-    padding: 0 8px;
-    gap: 4px;
+    padding: 0 12px;
+    gap: 6px;
     cursor: pointer;
     flex-shrink: 0;
     transition: all 0.3s;
-    min-width: fit-content;
   }
   .PhoneInputCountry:hover {
     border-color: rgba(212, 130, 10, 0.5);
@@ -83,13 +82,13 @@ const phoneInputStyles = `
     color: #F7F0E4;
     border: none;
     outline: none;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
     padding: 4px 0;
     font-weight: 300;
   }
   .PhoneInputCountryIcon {
-    font-size: 16px;
+    font-size: 18px;
   }
   .PhoneInputInput {
     flex: 1;
@@ -97,7 +96,7 @@ const phoneInputStyles = `
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #F7F0E4;
-    padding: 12px 12px;
+    padding: 12px 16px;
     font-size: 14px;
     font-weight: 300;
     border-radius: 2px;
@@ -112,21 +111,29 @@ const phoneInputStyles = `
   }
   @media (max-width: 640px) {
     .PhoneInput {
-      gap: 4px;
+      flex-direction: column;
+      gap: 8px;
     }
     .PhoneInputCountry {
-      padding: 0 6px;
-      gap: 2px;
+      width: 100%;
+      padding: 0 12px;
+      justify-content: space-between;
+      height: 46px;
     }
     .PhoneInputCountrySelect {
-      font-size: 11px;
+      font-size: 13px;
+      width: 100%;
+      background: transparent;
+      padding: 0 4px;
     }
     .PhoneInputCountryIcon {
-      font-size: 14px;
+      font-size: 18px;
+      flex-shrink: 0;
     }
     .PhoneInputInput {
-      padding: 10px 10px;
-      font-size: 13px;
+      padding: 12px 16px;
+      font-size: 14px;
+      width: 100%;
     }
   }
 `
@@ -307,9 +314,9 @@ function ContactForm() {
             </div>
           </div>
 
-          <div className="w-full">
+          <div className="space-y-2">
             <label className={labelCls}>WhatsApp / Phone</label>
-            <div className="w-full overflow-hidden">
+            <div className="w-full">
               <PhoneInput value={phone} onChange={setPhone} />
             </div>
           </div>
