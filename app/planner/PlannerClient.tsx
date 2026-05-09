@@ -121,11 +121,13 @@ Our exact packages:
 1. 4-Day Maasai Mara Luxury Safari — Ashnil Mara Lodge — $2,744/pp — Big Five, private game drives, full board
 2. 7-Day Family Safari at Sopa Lodges — $2,672/pp — Amboseli, Tsavo, Mara — great for families
 3. 5-Day Mara, Nakuru & Hell's Gate — $1,568/pp — rhinos, flamingos, cycling, Big Five
-4. 5-Day Rift Valley Tour — $1,420/pp — lakes, flamingos, gorge cycling, Naivasha hippos
-5. 7-Day Kenya Classic Safari — $2,190/pp — Amboseli, Tsavo, Mara full circuit
-6. 8-Day Kenya Odyssey to Mombasa — $2,480/pp — safari parks + Diani Beach finale
-7. 5-Day Taita Hills & Salt Lick via Mombasa — $1,680/pp — Salt Lick Lodge on stilts + coast
-8. 4-Day Ol Pejeta Conservancy — $3,200/pp — last northern white rhinos, wild dogs, Big Five
+4. 3-Day Maasai Mara Mid-Range Safari — $950/pp — tented camp, expert guide, Big Five
+5. 4-Day Maasai Mara & Lake Nakuru — $1,420/pp — flamingos, rhinos, Big Five, private jeep
+6. 3-Day Amboseli & Mt Kilimanjaro View — $890/pp — elephants, iconic peak backdrop
+7. 4-Day Maasai Mara & Lake Nakuru Group Joining — $780/pp — group safari, best value
+8. 3-Day Maasai Mara Private Family Safari — $1,100/pp — action-packed, child-friendly
+9. 12-Day Honeymoon Wilderness & Beach — $4,200/pp — parks + Diani Beach
+10. 10-Day Kenya 7 Parks Circuit — $3,800/pp — definitive grand tour
 
 Respond as a helpful human travel advisor. In plain HTML only (<h3><p><strong><ul><li>):
 1. Greet them warmly (no need to use a name)
@@ -353,14 +355,16 @@ Max 320 words. No markdown. Sound human and warm, not like a brochure.`
               <p className="text-[0.62rem] tracking-[0.2em] uppercase text-ivory/30 mb-3">Quick Book a Package</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
-                  { slug: 'mara-luxury-ashnil' as const,     label: '4-Day Mara Luxury',    price: '$2,744/pp' },
-                  { slug: 'family-circuit-sopa' as const,    label: '7-Day Family Safari',  price: '$2,672/pp' },
-                  { slug: 'mara-nakuru-hells-gate' as const, label: '5-Day Mara & Nakuru',  price: '$1,568/pp' },
-                  { slug: 'rift-valley-naivasha' as const,   label: '5-Day Rift Valley',    price: '$1,420/pp' },
-                  { slug: 'kenya-classic-circuit' as const,  label: '7-Day Kenya Classic',  price: '$2,190/pp' },
-                  { slug: 'mombasa-beach-safari' as const,   label: '8-Day to Mombasa',     price: '$2,480/pp' },
-                  { slug: 'taita-salt-lick' as const,        label: '5-Day Taita & Coast',  price: '$1,680/pp' },
-                  { slug: 'ol-pejeta-laikipia' as const,     label: '4-Day Ol Pejeta',      price: '$3,200/pp' },
+                  { slug: 'mara-luxury-ashnil' as const,       label: '4-Day Mara Luxury – Ashnil',      price: '$2,744/pp' },
+                  { slug: 'family-safari-sopa-7day' as const,  label: '7-Day Family at Sopa Lodges',     price: '$2,672/pp' },
+                  { slug: 'family-mara-nakuru-5day' as const,  label: '5-Day Family Mara & Nakuru',      price: '$1,568/pp' },
+                  { slug: 'mara-midrange-3day' as const,       label: '3-Day Mara Mid-Range Camp',       price: '$950/pp' },
+                  { slug: 'mara-nakuru-jeep-4day' as const,    label: '4-Day Mara & Nakuru Jeep',        price: '$1,420/pp' },
+                  { slug: 'amboseli-kili-3day' as const,       label: '3-Day Amboseli & Kilimanjaro',    price: '$890/pp' },
+                  { slug: 'mara-nakuru-group-4day' as const,   label: '4-Day Mara & Nakuru Group',       price: '$780/pp' },
+                  { slug: 'mara-family-3day' as const,         label: '3-Day Mara Family Private',       price: '$1,100/pp' },
+                  { slug: 'honeymoon-12day' as const,          label: '12-Day Honeymoon & Beach',        price: '$4,200/pp' },
+                  { slug: 'kenya-10day-7parks' as const,       label: '10-Day 7 Parks Circuit',          price: '$3,800/pp' },
                 ].map((pkg) => (
                   <button key={pkg.slug} onClick={() => bookNow(pkg.slug)}
                     className="flex items-center justify-between px-3 py-2 border border-white/10 rounded-sm hover:border-gold/40 hover:bg-gold/5 transition-all group text-xs">
