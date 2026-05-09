@@ -82,6 +82,15 @@ export const DESTINATION_IMAGES: Record<string, string> = {
   'aberdare':      'https://images.pexels.com/photos/28571447/pexels-photo-28571447.jpeg?auto=compress&cs=tinysrgb&w=1600',
 }
 
+// Tour-specific images (custom uploads)
+export const TOUR_IMAGES: Record<string, string> = {
+  'amboseli-kili-3day': '/images/amboseli-kili-3day.jpg',
+  'mara-midrange-3day': '/images/mara-midrange-3day.jpg',
+  'mara-nakuru-jeep-4day': '/images/mara-nakuru-jeep-4day.jpg',
+  'family-mara-nakuru-5day': '/images/family-mara-nakuru-5day.jpg',
+  'kenya-10day-7parks': '/images/kenya-10day-7parks.jpg',
+}
+
 // Fallback videos from Coverr/Pexels (replace with your own downloads)
 export const TIER_VIDEOS: Record<string, string> = {
   sovereign: '/videos/hero-sovereign.mp4',

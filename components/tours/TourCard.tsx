@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { cn, formatPrice, getTierBadgeStyle, DESTINATION_IMAGES } from '@/lib/utils'
+import { cn, formatPrice, getTierBadgeStyle, DESTINATION_IMAGES, TOUR_IMAGES } from '@/lib/utils'
 import type { Tour } from '@/lib/types'
 
 interface TourCardProps {
@@ -9,7 +9,8 @@ interface TourCardProps {
 }
 
 export default function TourCard({ tour, priority = false }: TourCardProps) {
-  const imageUrl = tour.hero_image_url
+  const imageUrl = TOUR_IMAGES[tour.slug]
+    || tour.hero_image_url
     || DESTINATION_IMAGES[tour.destination?.slug || '']
     || `https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=75`
 
