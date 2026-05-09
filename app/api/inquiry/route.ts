@@ -33,6 +33,9 @@ export async function POST(req: Request) {
     const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
     const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+    let supabaseError = false
+    let inquiry: any = null
+
     const supabaseResponse = await fetch(`${SUPABASE_URL}/rest/v1/inquiries`, {
       method: 'POST',
       headers: {
@@ -55,16 +58,20 @@ export async function POST(req: Request) {
         status:         'new',
         notes:          payment_intent ? `Payment intent: ${payment_intent}` : null,
       }),
+    }).catch(e => {
+      console.error('Supabase Network Error:', e)
+      supabaseError = true
+      return null
     })
 
-    if (!supabaseResponse.ok) {
-      const errorData = await supabaseResponse.json()
-      console.error('Supabase insert error:', errorData)
-      return NextResponse.json({ error: 'Failed to save inquiry' }, { status: 500 })
+    // If database is down, still proceed with email notifications
+    if (!supabaseResponse || !supabaseResponse.ok) {
+      supabaseError = true
+      console.error('Supabase Save Failed - continuing to email notification')
+    } else {
+      const data = await supabaseResponse.json()
+      inquiry = Array.isArray(data) ? data[0] : data
     }
-
-    const data = await supabaseResponse.json()
-    const inquiry = Array.isArray(data) ? data[0] : data
 
     // ── 2. Notify team via Resend ────────────────────────
     if (process.env.RESEND_API_KEY) {
@@ -94,7 +101,7 @@ export async function POST(req: Request) {
               <tr><td style="padding:10px 0;color:#888;vertical-align:top">Message</td><td style="padding:10px 0">${message || '—'}</td></tr>
             </table>
             <div style="margin-top:20px;padding:14px;background:#fff8ee;border-left:3px solid #D4820A;border-radius:3px;font-size:13px;color:#666">
-              Reply to this email to respond directly. Inquiry ID: <code>${inquiry.id}</code>
+              Reply to this email to respond directly.${inquiry?.id ? ` Inquiry ID: <code>${inquiry.id}</code>` : ' ⚠️ Database save failed - lead logged via email.'}
             </div></div>`,
         }),
       }).catch(e => console.error('Resend notify error:', e))
@@ -138,7 +145,15 @@ export async function POST(req: Request) {
       ).catch(e => console.error('Callmebot error:', e))
     }
 
-    return NextResponse.json({ success: true, id: inquiry.id })
+    // ── Return response ──────────────────────────────────
+    return NextResponse.json({
+      success: true,
+      id: inquiry?.id || null,
+      database_error: supabaseError,
+      message: supabaseError
+        ? 'Inquiry received and emailed to team (database temporarily unavailable)'
+        : 'Inquiry saved and confirmation sent',
+    })
 
   } catch (e) {
     console.error('Inquiry API error:', e)
