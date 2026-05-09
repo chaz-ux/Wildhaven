@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase'
 
@@ -10,12 +8,24 @@ export async function POST(req: NextRequest) {
       name, email, phone, message,
       preferred_tier, target_budget,
       tour_id, travel_dates, group_size,
-      package_slug, travel_start, travel_end,
+      package_slug, travel_start,
       payment_intent, source,
+      package_duration,
     } = body
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Name and email are required' }, { status: 400 })
+    }
+
+    // Auto-calculate end date from start + duration
+    let computedDates = travel_dates || null
+    if (travel_start && package_duration) {
+      const start = new Date(travel_start)
+      const end   = new Date(start)
+      end.setDate(end.getDate() + Number(package_duration))
+      computedDates = `${travel_start} to ${end.toISOString().split('T')[0]}`
+    } else if (travel_start) {
+      computedDates = travel_start
     }
 
     // ── 1. Save to Supabase ──────────────────────────────
@@ -30,7 +40,7 @@ export async function POST(req: NextRequest) {
         preferred_tier: preferred_tier || package_slug || null,
         target_budget:  target_budget || null,
         tour_id:        tour_id || null,
-        travel_dates:   travel_dates || (travel_start ? `${travel_start}${travel_end ? ` to ${travel_end}` : ''}` : null),
+        travel_dates:   computedDates,
         group_size:     group_size || 1,
         source:         source || 'website',
         status:         'new',
@@ -44,10 +54,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to save inquiry' }, { status: 500 })
     }
 
-    // ── 2. Send email notification via Resend ────────────
-    // Only runs when RESEND_API_KEY is set
+    // ── 2. Notify team via Resend ────────────────────────
     if (process.env.RESEND_API_KEY) {
       const notifyEmail = process.env.NOTIFY_EMAIL || 'hello@zazusafaris.com'
+
       await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -55,39 +65,28 @@ export async function POST(req: NextRequest) {
           'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
         },
         body: JSON.stringify({
-          from:    'Zazu Safaris <noreply@zazusafaris.com>',
-          to:      [notifyEmail],
-          subject: `New Safari Inquiry — ${name}`,
-          html: `
-            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">
-              <h2 style="color:#D4820A;border-bottom:1px solid #eee;padding-bottom:10px">
-                New Safari Inquiry
-              </h2>
-              <table style="width:100%;border-collapse:collapse">
-                <tr><td style="padding:8px 0;color:#666;width:140px">Name</td><td style="padding:8px 0;font-weight:500">${name}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0"><a href="mailto:${email}">${email}</a></td></tr>
-                <tr><td style="padding:8px 0;color:#666">Phone</td><td style="padding:8px 0">${phone || '—'}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Package</td><td style="padding:8px 0">${package_slug || preferred_tier || '—'}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Group Size</td><td style="padding:8px 0">${group_size || '—'}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Travel Dates</td><td style="padding:8px 0">${travel_dates || (travel_start ? `${travel_start}${travel_end ? ` → ${travel_end}` : ''}` : '—')}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Budget</td><td style="padding:8px 0">${target_budget || '—'}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Payment Intent</td><td style="padding:8px 0;color:#D4820A;font-weight:500">${payment_intent || 'enquire'}</td></tr>
-                <tr><td style="padding:8px 0;color:#666">Source</td><td style="padding:8px 0">${source || 'website'}</td></tr>
-                <tr><td style="padding:8px 0;color:#666;vertical-align:top">Message</td><td style="padding:8px 0">${message || '—'}</td></tr>
-              </table>
-              <div style="margin-top:20px;padding:15px;background:#fff8ee;border-left:3px solid #D4820A;border-radius:3px">
-                <p style="margin:0;font-size:13px;color:#666">
-                  Reply directly to this email or WhatsApp the client${phone ? ` at ${phone}` : ''}.
-                  Inquiry ID: <code>${data.id}</code>
-                </p>
-              </div>
-            </div>
-          `,
+          from:     'Zazu Safaris <noreply@zazusafaris.com>',
+          to:       [notifyEmail],
+          subject:  `New Safari Inquiry — ${name}`,
           reply_to: email,
+          html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
+            <h2 style="color:#D4820A;border-bottom:2px solid #f0e8d8;padding-bottom:12px;margin:0 0 20px">🦁 New Safari Inquiry</h2>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888;width:140px">Name</td><td style="padding:10px 0;font-weight:600">${name}</td></tr>
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888">Email</td><td style="padding:10px 0"><a href="mailto:${email}" style="color:#D4820A">${email}</a></td></tr>
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888">Phone</td><td style="padding:10px 0">${phone || '—'}</td></tr>
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888">Package</td><td style="padding:10px 0;font-weight:600">${package_slug || preferred_tier || '—'}</td></tr>
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888">Group</td><td style="padding:10px 0">${group_size || '—'}</td></tr>
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888">Safari Dates</td><td style="padding:10px 0">${computedDates || '—'}</td></tr>
+              <tr style="border-bottom:1px solid #f5f0e8"><td style="padding:10px 0;color:#888">Payment</td><td style="padding:10px 0;color:#D4820A;font-weight:600">${payment_intent || 'enquire'}</td></tr>
+              <tr><td style="padding:10px 0;color:#888;vertical-align:top">Message</td><td style="padding:10px 0">${message || '—'}</td></tr>
+            </table>
+            <div style="margin-top:20px;padding:14px;background:#fff8ee;border-left:3px solid #D4820A;border-radius:3px;font-size:13px;color:#666">
+              Reply to this email to respond directly. Inquiry ID: <code>${data.id}</code>
+            </div></div>`,
         }),
-      }).catch(err => console.error('Resend error:', err))
+      }).catch(e => console.error('Resend notify error:', e))
 
-      // ── 3. Send confirmation email to client ───────────
       await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -97,59 +96,34 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           from:    'Zazu Safaris <noreply@zazusafaris.com>',
           to:      [email],
-          subject: 'We received your safari enquiry ✦',
-          html: `
-            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#1C1008;color:#F7F0E4;padding:40px 30px;border-radius:6px">
-              <h1 style="font-family:Georgia,serif;font-weight:300;font-size:28px;color:#F7F0E4;margin:0 0 8px">
-                Safari Brief Received
-              </h1>
-              <p style="color:#D4820A;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin:0 0 30px">Zazu Safaris</p>
-
-              <p style="color:rgba(247,240,228,0.7);line-height:1.7;margin:0 0 20px">
-                Hi ${name}, thank you for reaching out. We've received your safari enquiry and our team will be in touch within <strong style="color:#F7F0E4">2 hours</strong> with a personalised proposal.
-              </p>
-
-              ${package_slug && package_slug !== 'custom' ? `
-              <div style="background:rgba(212,130,10,0.1);border:1px solid rgba(212,130,10,0.3);border-radius:4px;padding:16px;margin:24px 0">
-                <p style="margin:0;font-size:12px;color:rgba(212,130,10,0.8);letter-spacing:2px;text-transform:uppercase">Your Selected Package</p>
-                <p style="margin:6px 0 0;color:#F7F0E4;font-size:15px">${package_slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}</p>
-                ${payment_intent !== 'enquire' ? `<p style="margin:4px 0 0;font-size:12px;color:rgba(247,240,228,0.5)">Payment intent: ${payment_intent} — we'll send a secure Pesapal link shortly</p>` : ''}
-              </div>` : ''}
-
-              <p style="color:rgba(247,240,228,0.5);line-height:1.7;font-size:13px;margin:20px 0 0">
-                Questions in the meantime? Reply to this email or WhatsApp us at 
-                <a href="https://wa.me/254141481665" style="color:#D4820A">+254 141 481 665</a>.
-              </p>
-
-              <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1)">
-                <p style="margin:0;font-size:11px;color:rgba(247,240,228,0.25)">
-                  Zazu Safaris · Nairobi, Kenya · zazusafaris.com
-                </p>
-              </div>
-            </div>
-          `,
+          subject: 'Your safari enquiry is confirmed ✦',
+          html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#1C1008;color:#F7F0E4;padding:40px 30px;border-radius:8px">
+            <p style="color:#D4820A;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">Zazu Safaris</p>
+            <h1 style="font-family:Georgia,serif;font-weight:300;font-size:28px;color:#F7F0E4;margin:0 0 20px">We've received your safari brief</h1>
+            <p style="color:rgba(247,240,228,0.65);line-height:1.8;margin:0 0 20px">Hi ${name}, our team will be in touch within <strong style="color:#F7F0E4">2 hours</strong> with your personalised proposal.</p>
+            ${package_slug && package_slug !== 'custom' ? `
+            <div style="background:rgba(212,130,10,0.12);border:1px solid rgba(212,130,10,0.3);border-radius:6px;padding:16px;margin:0 0 20px">
+              <p style="margin:0 0 4px;font-size:11px;color:rgba(212,130,10,0.8);letter-spacing:3px;text-transform:uppercase">Selected Package</p>
+              <p style="margin:0;color:#F7F0E4;font-size:15px">${package_slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}</p>
+              ${computedDates ? `<p style="margin:4px 0 0;font-size:13px;color:rgba(247,240,228,0.45)">Safari dates: ${computedDates}</p>` : ''}
+            </div>` : ''}
+            <p style="color:rgba(247,240,228,0.4);font-size:13px">Questions? <a href="https://wa.me/254141481665" style="color:#D4820A">WhatsApp us</a> or reply to this email.</p>
+            <div style="margin-top:32px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(247,240,228,0.2)">Zazu Safaris · Nairobi, Kenya · zazusafaris.com</div>
+          </div>`,
         }),
-      }).catch(err => console.error('Client confirmation email error:', err))
+      }).catch(e => console.error('Resend confirm error:', e))
     }
 
-    // ── 4. WhatsApp notification to operator ─────────────
-    // Uses Callmebot (free WhatsApp API for personal numbers)
-    // Set CALLMEBOT_PHONE and CALLMEBOT_APIKEY in .env.local to enable
+    // ── 3. WhatsApp alert via Callmebot ──────────────────
     if (process.env.CALLMEBOT_PHONE && process.env.CALLMEBOT_APIKEY) {
-      const waText = encodeURIComponent(
-        `🦁 NEW INQUIRY — Zazu Safaris\n` +
-        `👤 ${name}\n` +
-        `📧 ${email}\n` +
-        `📱 ${phone || 'no phone'}\n` +
-        `📦 ${package_slug || preferred_tier || 'not specified'}\n` +
-        `👥 Group: ${group_size || '—'}\n` +
-        `📅 ${travel_dates || travel_start || 'flexible'}\n` +
-        `💳 Intent: ${payment_intent || 'enquire'}\n` +
-        `💬 ${message ? message.substring(0, 100) : 'No message'}`
+      const msg = encodeURIComponent(
+        `🦁 NEW INQUIRY\n👤 ${name}\n📧 ${email}\n📱 ${phone || '—'}\n` +
+        `📦 ${package_slug || '—'}\n👥 ${group_size || '—'}\n` +
+        `📅 ${computedDates || 'flexible'}\n💳 ${payment_intent || 'enquire'}`
       )
       await fetch(
-        `https://api.callmebot.com/whatsapp.php?phone=${process.env.CALLMEBOT_PHONE}&text=${waText}&apikey=${process.env.CALLMEBOT_APIKEY}`
-      ).catch(err => console.error('Callmebot error:', err))
+        `https://api.callmebot.com/whatsapp.php?phone=${process.env.CALLMEBOT_PHONE}&text=${msg}&apikey=${process.env.CALLMEBOT_APIKEY}`
+      ).catch(e => console.error('Callmebot error:', e))
     }
 
     return NextResponse.json({ success: true, id: data.id })
