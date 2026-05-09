@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
+
+// Lazy load react-phone-number-input to avoid hydration issues
+const PhoneField = lazy(() => import('react-phone-number-input').then(mod => ({ default: mod.default })))
 
 const PACKAGES = [
   { value: 'mara-luxury-ashnil',       label: '4-Day Maasai Mara Luxury Safari – Ashnil Mara Lodge',      price: 2744, days: 4  },
@@ -17,22 +20,6 @@ const PACKAGES = [
   { value: 'honeymoon-12day',          label: '12-Day Honeymoon – Wilderness & Beach Safaris in Kenya',   price: 4200, days: 12 },
   { value: 'kenya-10day-7parks',       label: '10-Day Tour: 7 Best Parks in Kenya Memorable Safari',      price: 3800, days: 10 },
   { value: 'custom',                   label: 'Custom / Not sure yet — help me choose',                    price: 0,    days: 0  },
-]
-
-const COUNTRY_CODES = [
-  { code: '+254', flag: '🇰🇪', name: 'Kenya' },
-  { code: '+255', flag: '🇹🇿', name: 'Tanzania' },
-  { code: '+256', flag: '🇺🇬', name: 'Uganda' },
-  { code: '+250', flag: '🇷🇼', name: 'Rwanda' },
-  { code: '+27',  flag: '🇿🇦', name: 'South Africa' },
-  { code: '+1',   flag: '🇺🇸', name: 'USA/Canada' },
-  { code: '+44',  flag: '🇬🇧', name: 'UK' },
-  { code: '+61',  flag: '🇦🇺', name: 'Australia' },
-  { code: '+49',  flag: '🇩🇪', name: 'Germany' },
-  { code: '+33',  flag: '🇫🇷', name: 'France' },
-  { code: '+31',  flag: '🇳🇱', name: 'Netherlands' },
-  { code: '+971', flag: '🇦🇪', name: 'UAE' },
-  { code: '+91',  flag: '🇮🇳', name: 'India' },
 ]
 
 function calcEndDate(start: string, days: number): string {
@@ -51,34 +38,77 @@ function fmtUSD(n: number): string {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 }
 
-// ── Inline phone input ──────────────────────────────────────────────────────────
+// ── Phone input with all countries via react-phone-number-input ──────────────────
 function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [code, setCode] = useState('+254')
-  const [num, setNum] = useState('')
-
-  useEffect(() => { onChange(num ? `${code} ${num}` : '') }, [code, num, onChange])
-
   return (
-    <div className="flex gap-2 w-full">
-      <select
-        value={code}
-        onChange={e => setCode(e.target.value)}
-        className="flex-shrink-0 w-28 bg-white/5 border border-white/20 text-ivory rounded-sm px-2 py-3 text-sm outline-none focus:border-gold/50 transition-colors [color-scheme:dark]"
-      >
-        {COUNTRY_CODES.map(c => (
-          <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
-        ))}
-      </select>
-      <input
-        type="tel"
-        placeholder="700 000 000"
-        value={num}
-        onChange={e => setNum(e.target.value)}
-        className="flex-1 min-w-0 bg-white/5 border border-white/20 text-ivory placeholder:text-ivory/35 rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors"
+    <Suspense fallback={<input type="tel" placeholder="+254 700 000 000" className="w-full bg-white/5 border border-white/20 text-ivory rounded-sm px-4 py-3 text-sm font-light outline-none focus:border-gold/50 transition-colors" />}>
+      <PhoneField
+        value={value}
+        onChange={(v: string | undefined) => onChange(v || '')}
+        defaultCountry="KE"
+        international
+        placeholder="+254 700 000 000"
+        className="PhoneInput"
       />
-    </div>
+    </Suspense>
   )
 }
+
+// ── Styles for react-phone-number-input ────────────────────────────────────────
+const phoneInputStyles = `
+  .PhoneInput {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  .PhoneInputCountry {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    padding: 0 12px;
+    gap: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .PhoneInputCountry:hover {
+    border-color: rgba(212, 130, 10, 0.5);
+  }
+  .PhoneInputCountrySelect {
+    background: #1C1008;
+    color: #F7F0E4;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 0;
+    font-weight: 300;
+  }
+  .PhoneInputCountryIcon {
+    font-size: 18px;
+  }
+  .PhoneInputInput {
+    flex: 1;
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #F7F0E4;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 300;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .PhoneInputInput:focus {
+    border-color: rgba(212, 130, 10, 0.5);
+  }
+  .PhoneInputInput::placeholder {
+    color: rgba(247, 240, 228, 0.35);
+  }
+`
 
 // ── Main form ─────────────────────────────────────────────────────────────────
 function ContactForm() {
@@ -398,6 +428,7 @@ function ContactForm() {
 export default function ContactPage() {
   return (
     <>
+      <style>{phoneInputStyles}</style>
       <section className="pt-36 pb-16 px-6 bg-charcoal">
         <div className="max-w-[1400px] mx-auto">
           <p className="text-[0.65rem] tracking-[0.3em] uppercase text-gold mb-4">Book Your Safari</p>
