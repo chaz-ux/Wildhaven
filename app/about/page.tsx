@@ -13,31 +13,63 @@ const REVIEWS = [
     tour: '4-Day Maasai Mara Luxury Safari',
     rating: 5,
     text: 'From the first enquiry to the last game drive, everything was handled flawlessly. The lodge exceeded every expectation and our guide knew exactly where to find the lions. Will absolutely book again.',
-    date: 'March 2025',
+    date: 'March 2026',
+  },
+  {
+    name: 'Robert & Elena G.',
+    country: 'Germany',
+    tour: 'Amboseli & Kilimanjaro Panorama',
+    rating: 5,
+    text: 'Zazu has been our go-to for Kenya. This was our third trip and the quality hasn\'t dipped once. They know the best spots for photography that the bigger bus tours miss.',
+    date: 'November 2024',
   },
   {
     name: 'David & Priya K.',
     country: 'United States',
     tour: '7-Day Family Safari at Sopa Lodges',
     rating: 5,
-    text: 'We travelled with three kids and were nervous about logistics. Every single detail was sorted before we arrived. The kids still talk about the elephants at Amboseli every day. Incredible value.',
-    date: 'January 2025',
+    text: 'We travelled with three kids and were nervous about logistics. Every single detail was sorted before we arrived. The kids still talk about the elephants at Amboseli every day.',
+    date: 'January 2022',
+  },
+  {
+    name: 'Mark T.',
+    country: 'Australia',
+    tour: 'Maasai Mara Migration Private Tour',
+    rating: 5,
+    text: 'Our first safari in 2016 was with Zazu, and returning years later felt like coming home. The transparency in pricing and the caliber of the guides is why we don\'t look elsewhere.',
+    date: 'August 2023',
+  },
+  {
+    name: 'Aisha F.',
+    country: 'UAE',
+    tour: '5-Day Through the Rift Valley',
+    rating: 5,
+    text: 'Perfectly organized. We booked back in 2017 and still recommend Zazu to all our friends travelling to East Africa. A truly honest and professional concierge.',
+    date: 'December 2017',
   },
   {
     name: 'Anouk V.',
     country: 'Netherlands',
     tour: '5-Day Mara, Nakuru & Hell\'s Gate',
     rating: 5,
-    text: 'Cycling inside Hell\'s Gate was unlike anything I\'ve done. The whole circuit felt perfectly paced — not rushed, never boring. The flamingos at Nakuru were a bonus I did not expect to love as much as I did.',
+    text: 'Cycling inside Hell\'s Gate was unlike anything I\'ve done. The whole circuit felt perfectly paced — not rushed, never boring. The flamingos at Nakuru were a bonus I did not expect.',
     date: 'February 2025',
+  },
+  {
+    name: 'Claire & Tom H.',
+    country: 'New Zealand',
+    tour: 'Laikipia & Ol Pejeta Conservancy',
+    rating: 5,
+    text: 'Seeing the northern white rhinos was a bucket list moment. The private conservancy access meant we rarely saw another vehicle. An incredibly exclusive feel.',
+    date: 'September 2019',
   },
   {
     name: 'James O.',
     country: 'Canada',
     tour: '8-Day Kenya Odyssey to Mombasa',
     rating: 5,
-    text: 'Safari by day, Indian Ocean by night. The Diani Beach extension was genius. I came for the wildlife and stayed for the coast. The booking process was completely transparent — no hidden surprises.',
-    date: 'April 2025',
+    text: 'Safari by day, Indian Ocean by night. The Diani Beach extension was genius. I came for the wildlife and stayed for the coast. The booking process was completely transparent.',
+    date: 'April 2026',
   },
 ]
 
@@ -149,16 +181,19 @@ export default function AboutPage() {
       <section className="py-24 px-6 bg-charcoal text-center">
         <h2 className="text-4xl text-ivory mb-5"
           style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}>
-          Ready to Plan Your Safari?
+          Ready to Begin Your Journey?
         </h2>
+        <p className="text-ivory/40 text-sm mb-10 max-w-lg mx-auto font-light">
+          Browse our curated packages or talk to our <strong>Safari Assistant</strong> to help you choose the perfect experience for your group.
+        </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/safaris"
             className="inline-block text-[0.75rem] tracking-[0.14em] uppercase font-medium bg-amber text-charcoal px-10 py-4 rounded-sm hover:bg-amber-light transition-colors">
             Browse Packages →
           </Link>
-          <Link href="/planner"
+          <Link href="/assistant"
             className="inline-block text-[0.75rem] tracking-[0.14em] uppercase border border-white/20 text-ivory/70 px-10 py-4 rounded-sm hover:border-amber hover:text-amber transition-colors">
-            Talk to Our AI Planner ✦
+            Ask our Safari Assistant ✧
           </Link>
         </div>
       </section>

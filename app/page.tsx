@@ -43,21 +43,20 @@ export default async function HomePage() {
           }}
         />
         <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <p className="text-[0.65rem] tracking-[0.3em] uppercase text-gold mb-4">AI Safari Concierge</p>
+          <p className="text-[0.65rem] tracking-[0.3em] uppercase text-gold mb-4">Can't Find What You're Looking For?</p>
           <h2
             className="text-4xl md:text-5xl text-ivory mb-4 leading-tight"
             style={{ fontFamily: 'var(--font-cormorant)', fontWeight: 300 }}
           >
-            Not Sure Where to Start?
+            Build a Custom Safari.
           </h2>
           <p className="text-sm text-ivory/45 leading-relaxed mb-10 font-light">
-            Answer 5 visual questions. Our AI concierge builds you a personalised Dream Board — the right tier, destination, and itinerary, made for you.
-          </p>
+            None of our packages quite fit? Tell us your vision — budget, destinations, group — and we'll design a safari around you within 2 hours.</p>
           <Link
             href="/planner"
             className="btn-shine inline-block text-[0.75rem] tracking-[0.14em] uppercase font-medium bg-gold text-charcoal px-10 py-4 rounded-sm hover:bg-gold-light transition-colors duration-300"
           >
-            Find My Wild ✦
+            Request Custom Safari ✦
           </Link>
         </div>
       </section>

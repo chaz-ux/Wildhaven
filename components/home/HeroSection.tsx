@@ -143,7 +143,7 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
             href="/planner"
             className="w-full sm:w-auto text-center text-[0.75rem] tracking-[0.14em] uppercase font-light border border-ivory/25 text-ivory px-8 py-4 rounded-sm hover:border-gold hover:text-gold transition-colors duration-300"
           >
-            Find My Wild ✦
+            Custom Safari ✦
           </Link>
         </div>
 

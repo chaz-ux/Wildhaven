@@ -231,7 +231,7 @@ export default function CustomSafariForm() {
                   </button>
                   <input type="number" min="1" max="50" placeholder="1"
                     value={form.travellers} onChange={e => set('travellers', e.target.value)}
-                    className={cn(iCls, 'text-center w-16 flex-shrink-0')} />
+                    className={cn(iCls, 'text-center w-12 flex-shrink-0')} />
                   <button
                     onClick={() => set('travellers', String((parseInt(form.travellers) || 0) + 1))}
                     className="w-9 h-9 border border-white/15 rounded-sm text-ivory/60 hover:border-gold/40 hover:text-gold transition-all text-lg flex-shrink-0 flex items-center justify-center">

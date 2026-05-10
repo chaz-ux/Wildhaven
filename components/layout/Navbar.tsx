@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 const links = [
   { href: '/safaris',  label: 'Safaris' },
-  { href: '/planner',  label: 'Find My Wild' },
+  { href: '/planner',  label: 'Custom Safari' },
   { href: '/about',    label: 'Our Story' },
   { href: '/contact',  label: 'Contact' },
 ]
