@@ -220,26 +220,31 @@ export default function CustomSafariForm() {
             </div>
 
             {/* Travellers + ages */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col sm:flex-row gap-6">
               <div>
                 <label className={lCls}>Number of Travellers</label>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => set('travellers', String(Math.max(1, (parseInt(form.travellers) || 1) - 1)))}
-                    className="w-9 h-9 border border-white/15 rounded-sm text-ivory/60 hover:border-gold/40 hover:text-gold transition-all text-lg flex-shrink-0 flex items-center justify-center">
+                    className="w-10 h-10 border border-white/15 rounded-sm text-ivory/60 hover:border-gold/40 hover:text-gold transition-all text-lg flex-shrink-0 flex items-center justify-center">
                     −
                   </button>
+                  
+                  {/* FIX: Removed iCls here so it doesn't inherit w-full. Hardcoded to w-16 */}
                   <input type="number" min="1" max="50" placeholder="1"
                     value={form.travellers} onChange={e => set('travellers', e.target.value)}
-                    className={cn(iCls, 'text-center w-12 flex-shrink-0')} />
+                    className="bg-white/5 border border-white/15 text-ivory rounded-sm py-2 text-sm font-light outline-none focus:border-gold/50 transition-colors [color-scheme:dark] text-center w-16 h-10 flex-shrink-0" />
+                  
                   <button
                     onClick={() => set('travellers', String((parseInt(form.travellers) || 0) + 1))}
-                    className="w-9 h-9 border border-white/15 rounded-sm text-ivory/60 hover:border-gold/40 hover:text-gold transition-all text-lg flex-shrink-0 flex items-center justify-center">
+                    className="w-10 h-10 border border-white/15 rounded-sm text-ivory/60 hover:border-gold/40 hover:text-gold transition-all text-lg flex-shrink-0 flex items-center justify-center">
                     +
                   </button>
                 </div>
               </div>
-              <div>
+              
+              {/* Ages input now takes up the remaining space */}
+              <div className="flex-1 w-full max-w-full">
                 <label className={lCls}>Ages of Travellers</label>
                 <input type="text" placeholder="e.g. 35, 34, 8, 6"
                   value={form.traveller_ages} onChange={e => set('traveller_ages', e.target.value)}
