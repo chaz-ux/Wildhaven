@@ -191,7 +191,7 @@ export default function AboutPage() {
             className="inline-block text-[0.75rem] tracking-[0.14em] uppercase font-medium bg-amber text-charcoal px-10 py-4 rounded-sm hover:bg-amber-light transition-colors">
             Browse Packages →
           </Link>
-          <Link href="/assistant"
+          <Link href="/ConciergePod"
             className="inline-block text-[0.75rem] tracking-[0.14em] uppercase border border-white/20 text-ivory/70 px-10 py-4 rounded-sm hover:border-amber hover:text-amber transition-colors">
             Ask our Safari Assistant ✧
           </Link>
