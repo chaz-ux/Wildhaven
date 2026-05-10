@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import PlannerClient from './PlannerClient'
+import CustomSafariForm from './CustomSafariForm'
 
 export const metadata: Metadata = {
-  title: 'Find My Wild — AI Safari Planner',
-  description: 'Answer 5 questions and our AI concierge builds you a personalised safari Dream Board.',
+  title: 'Custom Safari Request',
+  description: "Can't find exactly what you're looking for? Tell us your vision and we'll build a safari around you.",
 }
 
 export default function PlannerPage() {
-  return <PlannerClient />
+  return <CustomSafariForm />
 }
