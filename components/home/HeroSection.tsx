@@ -11,7 +11,15 @@ const TIER_VIDEOS: Record<string, string> = {
   tribe:     '/videos/hero-tribe.mp4',
 }
 
-// Fallback gradient when video not loaded
+// Static poster images shown instantly while video loads
+// These should be JPG frames extracted from your videos — put them in /public/posters/
+// Quick way to generate: ffmpeg -i hero-horizon.mp4 -ss 00:00:02 -frames:v 1 public/posters/horizon.jpg
+const TIER_POSTERS: Record<string, string> = {
+  sovereign: '/posters/sovereign.jpg',
+  horizon:   '/posters/horizon.jpg',
+  tribe:     '/posters/tribe.jpg',
+}
+
 const TIER_GRADIENTS: Record<string, string> = {
   sovereign: 'radial-gradient(ellipse at 70% 40%, #3d2a0a 0%, #1A1A18 60%)',
   horizon:   'radial-gradient(ellipse at 60% 50%, #0d2010 0%, #1A1A18 60%)',
@@ -23,10 +31,12 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ tiers }: HeroSectionProps) {
-  const [activeTier, setActiveTier] = useState<string>('horizon')
-  const [videoLoaded, setVideoLoaded] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const [activeTier, setActiveTier]   = useState<string>('horizon')
+  const [videoReady, setVideoReady]   = useState(false)
+  const [posterReady, setPosterReady] = useState(false)
+  const videoRef    = useRef<HTMLVideoElement>(null)
   const headlineRef = useRef<HTMLDivElement>(null)
+  const timeoutRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Parallax on scroll
   useEffect(() => {
@@ -40,65 +50,98 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Swap video source on tier change
+  // Preload poster image immediately on mount
+  useEffect(() => {
+    const img = new Image()
+    img.src = TIER_POSTERS['horizon']
+    img.onload = () => setPosterReady(true)
+    img.onerror = () => setPosterReady(true) // fallback to gradient if poster missing
+  }, [])
+
+  // Swap video on tier change
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
-    const src = TIER_VIDEOS[activeTier]
-    if (!src) return
-    setVideoLoaded(false)
-    video.src = src
-    video.load()
-    video.play().catch(() => {}) // Autoplay may be blocked — gradient fallback handles this
-  }, [activeTier])
-  // Auto-cycle through the tiers every 8 seconds
-  useEffect(() => {
-    const tierKeys = ['sovereign', 'horizon', 'tribe'];
-    
-    const cycleTimer = setInterval(() => {
-      setActiveTier((currentTier) => {
-        const currentIndex = tierKeys.indexOf(currentTier);
-        // Get the next index, and loop back to 0 if we hit the end
-        const nextIndex = (currentIndex + 1) % tierKeys.length;
-        return tierKeys[nextIndex];
-      });
-    }, 20000); // 20000 milliseconds = 20 seconds
 
-    // Cleanup the timer if the user leaves the page
-    return () => clearInterval(cycleTimer);
-  }, []);
+    // Clear any pending timeout
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+    setVideoReady(false)
+    video.src = TIER_VIDEOS[activeTier]
+    video.load()
+    video.play().catch(() => {})
+
+    // Safety net: if video hasn't loaded in 4s, show it anyway
+    // (avoids infinite gradient state on slow connections)
+    timeoutRef.current = setTimeout(() => setVideoReady(true), 4000)
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [activeTier])
+
+  // Auto-cycle tiers every 20s
+  useEffect(() => {
+    const keys = ['sovereign', 'horizon', 'tribe']
+    const timer = setInterval(() => {
+      setActiveTier(cur => {
+        const next = (keys.indexOf(cur) + 1) % keys.length
+        return keys[next]
+      })
+    }, 20000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const handleVideoReady = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setVideoReady(true)
+  }
 
   return (
     <section className="relative w-full h-screen min-h-[700px] overflow-hidden flex flex-col items-center justify-center">
-      {/* Gradient fallback / overlay base */}
+
+      {/* Layer 1: Gradient — always visible as base */}
       <div
         className="absolute inset-0 transition-all duration-1000"
         style={{ background: TIER_GRADIENTS[activeTier] }}
       />
 
-      {/* Video background */}
+      {/* Layer 2: Poster image — shows instantly, hides once video plays */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={TIER_POSTERS[activeTier]}
+        alt=""
+        aria-hidden="true"
+        className={cn(
+          'absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700',
+          posterReady && !videoReady ? 'opacity-100' : 'opacity-0'
+        )}
+      />
+
+      {/* Layer 3: Video — fades in over poster once ready */}
       <video
         ref={videoRef}
-        className={cn('video-bg transition-opacity duration-1000', videoLoaded ? 'opacity-100' : 'opacity-0')}
+        className={cn(
+          'absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000',
+          videoReady ? 'opacity-100' : 'opacity-0'
+        )}
         autoPlay
         muted
         loop
         playsInline
-        onCanPlay={() => setVideoLoaded(true)}
-      >
-        <source src={TIER_VIDEOS[activeTier]} type="video/mp4" />
-      </video>
+        preload="auto"
+        onCanPlayThrough={handleVideoReady}
+        // Also catch the faster canplay event as a secondary trigger
+        onCanPlay={handleVideoReady}
+      />
 
-      {/* Layered gradients for cinematic depth */}
+      {/* Cinematic overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/10 to-charcoal/40 z-10" />
       <div className="absolute inset-0 bg-gradient-to-r from-charcoal/30 to-transparent z-10" />
-
-      {/* Noise texture */}
       <div className="noise-overlay z-10" />
 
-      {/* ── Main content ─────────────────────────────────── */}
+      {/* ── Main content ────────────────────────────────── */}
       <div ref={headlineRef} className="relative z-20 text-center px-6 max-w-5xl mx-auto">
-        {/* Eyebrow */}
         <p
           className="text-[0.65rem] tracking-[0.35em] uppercase text-gold mb-6 opacity-0"
           style={{ animation: 'fade-up 1s cubic-bezier(0.25,0.1,0.25,1) 0.4s forwards' }}
@@ -106,7 +149,6 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
           East Africa&apos;s Premier Safari Concierge
         </p>
 
-        {/* Headline */}
         <h1
           className="text-display-xl text-ivory mb-6 opacity-0"
           style={{
@@ -120,7 +162,6 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
           <em className="text-gradient-gold not-italic">Feel&nbsp;It.</em>
         </h1>
 
-        {/* Subheading */}
         <p
           className="text-base md:text-lg text-ivory/55 font-light tracking-wide mb-12 opacity-0 max-w-xl mx-auto"
           style={{ animation: 'fade-up 1s cubic-bezier(0.25,0.1,0.25,1) 0.9s forwards' }}
@@ -128,7 +169,6 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
           Bespoke safaris across Kenya & Tanzania — crafted for how you travel.
         </p>
 
-        {/* CTA buttons */}
         <div
           className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0"
           style={{ animation: 'fade-up 1s cubic-bezier(0.25,0.1,0.25,1) 1.1s forwards' }}
@@ -147,7 +187,6 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
           </Link>
         </div>
 
-        {/* Tier selector pills */}
         <div
           className="flex items-center justify-center gap-3 mt-10 opacity-0"
           style={{ animation: 'fade-up 1s cubic-bezier(0.25,0.1,0.25,1) 1.4s forwards' }}
@@ -167,7 +206,7 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
                   : 'border-white/15 text-ivory/35 hover:border-white/30 hover:text-ivory/60'
               )}
             >
-              {tier.name || (tier as { slug: string; name: string }).name}
+              {tier.name}
             </button>
           ))}
         </div>
