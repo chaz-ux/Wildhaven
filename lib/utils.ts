@@ -99,6 +99,13 @@ export const TIER_VIDEOS: Record<string, string> = {
   default:   '/videos/hero-horizon.mp4',
 }
 
+// Poster snapshots extracted from the hero videos. Place generated JPGs in /public/posters
+export const TIER_POSTERS: Record<string, string> = {
+  sovereign: '/posters/sovereign.jpg',
+  horizon:   '/posters/horizon.jpg',
+  tribe:     '/posters/tribe.jpg',
+}
+
 // Pexels video IDs for reference (download from pexels.com/video/ID)
 // sovereign: 3048087 (lion at sunset)
 // horizon:   4988534 (elephant herd)

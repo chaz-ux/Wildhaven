@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
+import { cn, TIER_POSTERS } from '@/lib/utils'
 import type { Tier } from '@/lib/types'
 
 const TIER_VIDEOS: Record<string, string> = {
@@ -14,11 +14,7 @@ const TIER_VIDEOS: Record<string, string> = {
 // Poster snapshots (extracted frames) from the hero videos.
 // Place JPGs in `/public/posters/` using ffmpeg. Example:
 // ffmpeg -i public/videos/hero-horizon.mp4 -ss 00:00:02 -frames:v 1 -q:v 3 public/posters/horizon.jpg
-const TIER_POSTERS: Record<string, string> = {
-  sovereign: '/posters/sovereign.jpg',
-  horizon:   '/posters/horizon.jpg',
-  tribe:     '/posters/tribe.jpg',
-}
+// (poster mapping is provided by `lib/utils.ts` as `TIER_POSTERS`)
 
 const TIER_GRADIENTS: Record<string, string> = {
   sovereign: 'radial-gradient(ellipse at 70% 40%, #3d2a0a 0%, #1A1A18 60%)',
@@ -103,9 +99,7 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
         src={TIER_POSTERS[activeTier]}
         alt=""
         aria-hidden="true"
-        className={cn(
-          'absolute inset-0 w-full h-full object-cover object-center z-[1]'
-        )}
+        className={cn('absolute inset-0 w-full h-full object-cover object-center z-[1]')}
       />
 
       {/* Layer 3: Video — fades in on top only when ready */}
@@ -125,9 +119,23 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
       />
 
       {/* Cinematic overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/20 to-charcoal/50 z-10" />
-      <div className="absolute inset-0 bg-gradient-to-r from-charcoal/30 to-transparent z-10" />
-      <div className="noise-overlay z-10" />
+      <div
+        className={cn(
+          'absolute inset-0 transition-opacity duration-700 z-10',
+          videoReady
+            ? 'bg-gradient-to-t from-charcoal via-charcoal/25 to-charcoal/60 opacity-90'
+            : 'bg-gradient-to-t from-charcoal via-charcoal/20 to-charcoal/50 opacity-70'
+        )}
+      />
+
+      <div
+        className={cn(
+          'absolute inset-0 transition-opacity duration-700 z-10',
+          videoReady ? 'bg-gradient-to-r from-charcoal/40 to-transparent' : 'bg-gradient-to-r from-charcoal/30 to-transparent'
+        )}
+      />
+
+      <div className={cn('noise-overlay z-10', videoReady ? 'opacity-90' : 'opacity-60')} />
 
       {/* ── Main content ────────────────────────────────── */}
       <div ref={headlineRef} className="relative z-20 text-center px-6 max-w-5xl mx-auto">
