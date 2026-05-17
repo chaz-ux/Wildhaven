@@ -11,6 +11,12 @@ const TIER_VIDEOS: Record<string, string> = {
   tribe:     '/videos/hero-tribe.mp4',
 }
 
+const MOBILE_TIER_VIDEOS: Record<string, string> = {
+  sovereign: '/videos/hero-sovereign-mobile.mp4',
+  horizon:   '/videos/hero-horizon.mp4',
+  tribe:     '/videos/hero-tribe.mp4',
+}
+
 // Poster snapshots (extracted frames) from the hero videos.
 // Place JPGs in `/public/posters/` using ffmpeg. Example:
 // ffmpeg -i public/videos/hero-horizon.mp4 -ss 00:00:02 -frames:v 1 -q:v 3 public/posters/horizon.jpg
@@ -27,7 +33,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ tiers }: HeroSectionProps) {
-  const [activeTier, setActiveTier] = useState<string>('horizon')
+  const [activeTier, setActiveTier] = useState<string>('sovereign')
+  const [isMobile, setIsMobile] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const headlineRef = useRef<HTMLDivElement>(null)
@@ -47,6 +54,15 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
 
   // Swap video on tier change
   useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px)')
+    const updateIsMobile = () => setIsMobile(media.matches)
+    updateIsMobile()
+
+    media.addEventListener?.('change', updateIsMobile)
+    return () => media.removeEventListener?.('change', updateIsMobile)
+  }, [])
+
+  useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
@@ -54,7 +70,7 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
 
     setVideoReady(false)
-    video.src = TIER_VIDEOS[activeTier]
+    video.src = (isMobile ? MOBILE_TIER_VIDEOS : TIER_VIDEOS)[activeTier]
     video.load()
     video.play().catch(() => {})
 
@@ -65,17 +81,19 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
-  }, [activeTier])
+  }, [activeTier, isMobile])
 
-  // Auto-cycle tiers every 20s
+  // Rotate through all three tiers automatically so the hero feels alive
+  // without depending on button selection.
   useEffect(() => {
     const keys = ['sovereign', 'horizon', 'tribe']
     const timer = setInterval(() => {
-      setActiveTier(cur => {
-        const next = (keys.indexOf(cur) + 1) % keys.length
-        return keys[next]
+      setActiveTier((currentTier) => {
+        const nextIndex = (keys.indexOf(currentTier) + 1) % keys.length
+        return keys[nextIndex]
       })
     }, 20000)
+
     return () => clearInterval(timer)
   }, [])
 
@@ -193,18 +211,17 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
             { slug: 'horizon',   name: 'The Horizon' },
             { slug: 'tribe',     name: 'The Tribe' },
           ]).map((tier) => (
-            <button
+            <span
               key={tier.slug}
-              onClick={() => setActiveTier(tier.slug)}
               className={cn(
-                'text-[0.65rem] tracking-[0.15em] uppercase px-4 py-1.5 rounded-full border transition-all duration-400',
+                'text-[0.65rem] tracking-[0.15em] uppercase px-4 py-1.5 rounded-full border transition-all duration-400 cursor-default select-none',
                 activeTier === tier.slug
                   ? 'border-gold text-gold bg-gold/10'
                   : 'border-white/15 text-ivory/35 hover:border-white/30 hover:text-ivory/60'
               )}
             >
               {tier.name}
-            </button>
+            </span>
           ))}
         </div>
       </div>

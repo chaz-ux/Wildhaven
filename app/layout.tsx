@@ -6,6 +6,7 @@ import CustomCursor from '@/components/layout/CustomCursor'
 import PageTransition from '@/components/layout/PageTransition'
 import ConciergePod from '@/components/layout/ConciergePod'
 import SmoothScroll from '@/components/layout/SmoothScroll'
+import VideoCacheWarmup from '@/components/layout/VideoCacheWarmup'
 
 export const metadata: Metadata = {
   title: {
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <SmoothScroll>
+          <VideoCacheWarmup />
           <CustomCursor />
           <PageTransition />
           <Navbar />

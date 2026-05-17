@@ -99,6 +99,14 @@ export const TIER_VIDEOS: Record<string, string> = {
   default:   '/videos/hero-horizon.mp4',
 }
 
+// Assets worth warming in the background so repeat visits can play the hero clips immediately.
+export const HERO_VIDEO_CACHE_URLS = [
+  '/videos/hero-sovereign-mobile.mp4',
+  '/videos/hero-sovereign.mp4',
+  '/videos/hero-horizon.mp4',
+  '/videos/hero-tribe.mp4',
+]
+
 // Poster snapshots extracted from the hero videos. Place generated JPGs in /public/posters
 export const TIER_POSTERS: Record<string, string> = {
   sovereign: '/posters/sovereign.jpg',
