@@ -11,9 +11,9 @@ const TIER_VIDEOS: Record<string, string> = {
   tribe:     '/videos/hero-tribe.mp4',
 }
 
-// Static poster images shown instantly while video loads
-// These should be JPG frames extracted from your videos — put them in /public/posters/
-// Quick way to generate: ffmpeg -i hero-horizon.mp4 -ss 00:00:02 -frames:v 1 public/posters/horizon.jpg
+// Poster snapshots (extracted frames) from the hero videos.
+// Place JPGs in `/public/posters/` using ffmpeg. Example:
+// ffmpeg -i public/videos/hero-horizon.mp4 -ss 00:00:02 -frames:v 1 -q:v 3 public/posters/horizon.jpg
 const TIER_POSTERS: Record<string, string> = {
   sovereign: '/posters/sovereign.jpg',
   horizon:   '/posters/horizon.jpg',
@@ -31,12 +31,11 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ tiers }: HeroSectionProps) {
-  const [activeTier, setActiveTier]   = useState<string>('horizon')
-  const [videoReady, setVideoReady]   = useState(false)
-  const [posterReady, setPosterReady] = useState(false)
-  const videoRef    = useRef<HTMLVideoElement>(null)
+  const [activeTier, setActiveTier] = useState<string>('horizon')
+  const [videoReady, setVideoReady] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const headlineRef = useRef<HTMLDivElement>(null)
-  const timeoutRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Parallax on scroll
   useEffect(() => {
@@ -48,14 +47,6 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Preload poster image immediately on mount
-  useEffect(() => {
-    const img = new Image()
-    img.src = TIER_POSTERS['horizon']
-    img.onload = () => setPosterReady(true)
-    img.onerror = () => setPosterReady(true) // fallback to gradient if poster missing
   }, [])
 
   // Swap video on tier change
@@ -72,7 +63,7 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
     video.play().catch(() => {})
 
     // Safety net: if video hasn't loaded in 4s, show it anyway
-    // (avoids infinite gradient state on slow connections)
+    // (avoids leaving the user on the image forever if video is very slow)
     timeoutRef.current = setTimeout(() => setVideoReady(true), 4000)
 
     return () => {
@@ -106,37 +97,35 @@ export default function HeroSection({ tiers }: HeroSectionProps) {
         style={{ background: TIER_GRADIENTS[activeTier] }}
       />
 
-      {/* Layer 2: Poster image — shows instantly, hides once video plays */}
+      {/* Layer 2: Poster snapshot — permanent background (from video frames) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={TIER_POSTERS[activeTier]}
         alt=""
         aria-hidden="true"
         className={cn(
-          'absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700',
-          posterReady && !videoReady ? 'opacity-100' : 'opacity-0'
+          'absolute inset-0 w-full h-full object-cover object-center z-[1]'
         )}
       />
 
-      {/* Layer 3: Video — fades in over poster once ready */}
+      {/* Layer 3: Video — fades in on top only when ready */}
       <video
         ref={videoRef}
         className={cn(
-          'absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000',
+          'absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1500 z-[5]',
           videoReady ? 'opacity-100' : 'opacity-0'
         )}
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         onCanPlayThrough={handleVideoReady}
-        // Also catch the faster canplay event as a secondary trigger
         onCanPlay={handleVideoReady}
       />
 
       {/* Cinematic overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/10 to-charcoal/40 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/20 to-charcoal/50 z-10" />
       <div className="absolute inset-0 bg-gradient-to-r from-charcoal/30 to-transparent z-10" />
       <div className="noise-overlay z-10" />
 
